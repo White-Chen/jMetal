@@ -359,7 +359,7 @@ public class AdaptiveGrid<S extends Solution<?>> implements AbstractGrid<S> {
         for (int hypercube : hypercubes) {
             if (hypercube > 0) {
                 //sum += Math.pow((double) hypercube, eliminatePressure);
-                sum += Math.exp((double) hypercube * selectionPressure);
+                sum += Math.exp((double) hypercube * eliminatePressure);
             }
         }
 
@@ -373,7 +373,7 @@ public class AdaptiveGrid<S extends Solution<?>> implements AbstractGrid<S> {
             hypercube = tempList.get(i);
             if (hypercubes[hypercube] > 0) {
                 //accumulatedSum += 1.0 / Math.pow((double) hypercubes[hypercube], selectionPressure);
-                accumulatedSum += Math.exp((double) hypercube * selectionPressure);
+                accumulatedSum += Math.exp((double) hypercube * eliminatePressure);
             }
 
             if (accumulatedSum >= random) {

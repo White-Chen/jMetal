@@ -30,7 +30,7 @@ public class AdaptiveGridArchiveII<S extends Solution<?>> extends AbstractBounde
      */
     public AdaptiveGridArchiveII(int maxSize, int divisionNumber, int objectives) {
         super(maxSize);
-        dominanceComparator = new DominanceComparator<S>();
+        dominanceComparator = new DominanceComparator<>();
         grid = new VariationAdaptiveGrid<S>(1, objectives, divisionNumber);
     }
 
@@ -69,13 +69,13 @@ public class AdaptiveGridArchiveII<S extends Solution<?>> extends AbstractBounde
         }
 
         // At this point, the solution may be inserted
-        if (this.size() == 0) { //The setArchive is empty
+        if (getSolutionList().size() == 0) { //The setArchive is empty
             this.getSolutionList().add(solution);
             grid.updateGrid(getSolutionList());
             return true;
         }
 
-        if (this.getSolutionList().size() < this.getMaxSize()) { //The setArchive is not full
+        if (getSolutionList().size() < this.getMaxSize()) { //The setArchive is not full
             grid.updateGrid(solution, getSolutionList()); // Update the grid if applicable
             int location;
             location = grid.location(solution); // Get the location of the solution
@@ -107,10 +107,11 @@ public class AdaptiveGridArchiveII<S extends Solution<?>> extends AbstractBounde
 
     public void prune() {
         Iterator<S> iterator = getSolutionList().iterator();
+        int index = grid.rouletteWheel4Prune();
         while (iterator.hasNext()) {
             S element = iterator.next();
             int location2 = grid.location(element);
-            if (location2 == grid.rouletteWheel4Prune()) {
+            if (location2 == index) {
                 iterator.remove();
                 grid.removeSolution(location2);
                 return;
