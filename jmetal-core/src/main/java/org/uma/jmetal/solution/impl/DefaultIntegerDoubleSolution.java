@@ -11,86 +11,90 @@ import java.util.HashMap;
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public class DefaultIntegerDoubleSolution
-    extends AbstractGenericSolution<Number, IntegerDoubleProblem<?>>
-    implements IntegerDoubleSolution {
+        extends AbstractGenericSolution<Number, IntegerDoubleProblem<?>>
+        implements IntegerDoubleSolution {
 
-  private int numberOfIntegerVariables ;
-  private int numberOfDoubleVariables ;
+    private int numberOfIntegerVariables;
+    private int numberOfDoubleVariables;
 
-  /** Constructor */
-  public DefaultIntegerDoubleSolution(IntegerDoubleProblem<?> problem) {
-    super(problem) ;
+    /**
+     * Constructor
+     */
+    public DefaultIntegerDoubleSolution(IntegerDoubleProblem<?> problem) {
+        super(problem);
 
-    numberOfIntegerVariables = problem.getNumberOfIntegerVariables() ;
-    numberOfDoubleVariables = problem.getNumberOfDoubleVariables() ;
-    overallConstraintViolationDegree = 0.0 ;
-    numberOfViolatedConstraints = 0 ;
+        numberOfIntegerVariables = problem.getNumberOfIntegerVariables();
+        numberOfDoubleVariables = problem.getNumberOfDoubleVariables();
+        overallConstraintViolationDegree = 0.0;
+        numberOfViolatedConstraints = 0;
 
-    initializeIntegerDoubleVariables() ;
-    initializeObjectiveValues() ;
-  }
-
-  /** Copy constructor */
-  public DefaultIntegerDoubleSolution(DefaultIntegerDoubleSolution solution) {
-    super(solution.problem) ;
-
-    for (int i = 0; i < problem.getNumberOfObjectives(); i++) {
-      setObjective(i, solution.getObjective(i)) ;
+        initializeIntegerDoubleVariables();
+        initializeObjectiveValues();
     }
 
-    for (int i = 0 ; i < numberOfIntegerVariables; i++) {
-      setVariableValue(i, solution.getVariableValue(i)) ;
+    /**
+     * Copy constructor
+     */
+    public DefaultIntegerDoubleSolution(DefaultIntegerDoubleSolution solution) {
+        super(solution.problem);
+
+        for (int i = 0; i < problem.getNumberOfObjectives(); i++) {
+            setObjective(i, solution.getObjective(i));
+        }
+
+        for (int i = 0; i < numberOfIntegerVariables; i++) {
+            setVariableValue(i, solution.getVariableValue(i));
+        }
+
+        for (int i = numberOfIntegerVariables; i < (numberOfIntegerVariables + numberOfDoubleVariables); i++) {
+            setVariableValue(i, solution.getVariableValue(i));
+        }
+
+        overallConstraintViolationDegree = solution.overallConstraintViolationDegree;
+        numberOfViolatedConstraints = solution.numberOfViolatedConstraints;
+
+        attributes = new HashMap<Object, Object>(solution.attributes);
     }
 
-    for (int i = numberOfIntegerVariables ; i < (numberOfIntegerVariables+numberOfDoubleVariables); i++) {
-      setVariableValue(i, solution.getVariableValue(i)) ;
+    @Override
+    public Number getUpperBound(int index) {
+        return problem.getUpperBound(index);
     }
 
-    overallConstraintViolationDegree = solution.overallConstraintViolationDegree ;
-    numberOfViolatedConstraints = solution.numberOfViolatedConstraints ;
-
-    attributes = new HashMap<Object, Object>(solution.attributes) ;
-  }
-
-  @Override
-  public Number getUpperBound(int index) {
-    return problem.getUpperBound(index);
-  }
-
-  @Override
-  public int getNumberOfIntegerVariables() {
-    return numberOfIntegerVariables;
-  }
-
-  @Override
-  public int getNumberOfDoubleVariables() {
-    return numberOfDoubleVariables;
-  }
-
-  @Override
-  public Number getLowerBound(int index) {
-    return problem.getLowerBound(index) ;
-  }
-
-  @Override
-  public DefaultIntegerDoubleSolution copy() {
-    return new DefaultIntegerDoubleSolution(this);
-  }
-
-  @Override
-  public String getVariableValueString(int index) {
-    return getVariableValue(index).toString() ;
-  }
-  
-  private void initializeIntegerDoubleVariables() {
-    for (int i = 0 ; i < numberOfIntegerVariables; i++) {
-      Integer value = randomGenerator.nextInt((Integer)getLowerBound(i), (Integer)getUpperBound(i)) ;
-      setVariableValue(i, value) ;
+    @Override
+    public int getNumberOfIntegerVariables() {
+        return numberOfIntegerVariables;
     }
 
-    for (int i = numberOfIntegerVariables ; i < getNumberOfVariables(); i++) {
-      Double value = randomGenerator.nextDouble((Double)getLowerBound(i), (Double)getUpperBound(i)) ;
-      setVariableValue(i, value) ;
+    @Override
+    public int getNumberOfDoubleVariables() {
+        return numberOfDoubleVariables;
     }
-  }
+
+    @Override
+    public Number getLowerBound(int index) {
+        return problem.getLowerBound(index);
+    }
+
+    @Override
+    public DefaultIntegerDoubleSolution copy() {
+        return new DefaultIntegerDoubleSolution(this);
+    }
+
+    @Override
+    public String getVariableValueString(int index) {
+        return getVariableValue(index).toString();
+    }
+
+    private void initializeIntegerDoubleVariables() {
+        for (int i = 0; i < numberOfIntegerVariables; i++) {
+            Integer value = randomGenerator.nextInt((Integer) getLowerBound(i), (Integer) getUpperBound(i));
+            setVariableValue(i, value);
+        }
+
+        for (int i = numberOfIntegerVariables; i < getNumberOfVariables(); i++) {
+            Double value = randomGenerator.nextDouble((Double) getLowerBound(i), (Double) getUpperBound(i));
+            setVariableValue(i, value);
+        }
+    }
 }

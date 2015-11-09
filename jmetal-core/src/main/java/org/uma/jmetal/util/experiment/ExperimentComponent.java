@@ -26,5 +26,5 @@ package org.uma.jmetal.util.experiment;
  * Interface for all the results of an experiment
  */
 public interface ExperimentComponent {
-  public void run() ;
+    public void run();
 }

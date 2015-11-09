@@ -25,6 +25,7 @@ import java.util.List;
  */
 
 public interface SolutionListEvaluator<S extends Solution<?>> extends Serializable {
-  List<S> evaluate(List<S> solutionList, Problem<S> problem) ;
-  void shutdown() ;
+    List<S> evaluate(List<S> solutionList, Problem<S> problem);
+
+    void shutdown();
 }

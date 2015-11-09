@@ -34,37 +34,41 @@ import java.util.List;
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public class RandomSearch<S extends Solution<?>> implements Algorithm<List<S>> {
-  private Problem<S> problem ;
-  private int maxEvaluations ;
-  NonDominatedSolutionListArchive<S> nonDominatedArchive ;
+    NonDominatedSolutionListArchive<S> nonDominatedArchive;
+    private Problem<S> problem;
+    private int maxEvaluations;
 
-  /** Constructor */
-  public RandomSearch(Problem<S> problem, int maxEvaluations) {
-    this.problem = problem ;
-    this.maxEvaluations = maxEvaluations ;
-    nonDominatedArchive = new NonDominatedSolutionListArchive<S>();
-  }
-
-  /* Getter */
-  public int getMaxEvaluations() {
-    return maxEvaluations;
-  }
-
-  @Override public void run() {
-    int evaluations;
-
-    evaluations = 0;
-
-    S newSolution;
-    for (int i = 0; i < maxEvaluations; i++) {
-      newSolution = problem.createSolution() ;
-      problem.evaluate(newSolution);
-      evaluations++;
-      nonDominatedArchive.add(newSolution);
+    /**
+     * Constructor
+     */
+    public RandomSearch(Problem<S> problem, int maxEvaluations) {
+        this.problem = problem;
+        this.maxEvaluations = maxEvaluations;
+        nonDominatedArchive = new NonDominatedSolutionListArchive<S>();
     }
-  }
 
-  @Override public List<S> getResult() {
-    return nonDominatedArchive.getSolutionList();
-  }
+    /* Getter */
+    public int getMaxEvaluations() {
+        return maxEvaluations;
+    }
+
+    @Override
+    public void run() {
+        int evaluations;
+
+        evaluations = 0;
+
+        S newSolution;
+        for (int i = 0; i < maxEvaluations; i++) {
+            newSolution = problem.createSolution();
+            problem.evaluate(newSolution);
+            evaluations++;
+            nonDominatedArchive.add(newSolution);
+        }
+    }
+
+    @Override
+    public List<S> getResult() {
+        return nonDominatedArchive.getSolutionList();
+    }
 } 

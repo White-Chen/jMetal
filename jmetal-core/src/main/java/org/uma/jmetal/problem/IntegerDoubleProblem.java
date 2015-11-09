@@ -20,8 +20,11 @@ import org.uma.jmetal.solution.Solution;
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public interface IntegerDoubleProblem<S extends Solution<Number>> extends Problem<S> {
-  public Number getLowerBound(int index) ;
-  public Number getUpperBound(int index) ;
-  public int getNumberOfIntegerVariables() ;
-  public int getNumberOfDoubleVariables() ;
+    public Number getLowerBound(int index);
+
+    public Number getUpperBound(int index);
+
+    public int getNumberOfIntegerVariables();
+
+    public int getNumberOfDoubleVariables();
 }

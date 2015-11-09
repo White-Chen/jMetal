@@ -26,98 +26,121 @@ import java.util.List;
  */
 public class SolutionSetOutput {
 
-  public static class Printer {
-    private FileOutputContext varFileContext;
-    private FileOutputContext funFileContext;
-    private String varFileName = "VAR";
-    private String funFileName = "FUN";
-    private String separator = "\t";
-    private List<? extends Solution<?>> solutionSet;
-    private boolean selectFeasibleSolutions;
+    static public void printVariablesToFile(FileOutputContext context, List<? extends Solution<?>> solutionSet) {
+        BufferedWriter bufferedWriter = context.getFileWriter();
 
-    public Printer(List<? extends Solution<?>> solutionSet)  {
-      varFileContext = new DefaultFileOutputContext(varFileName);
-      funFileContext = new DefaultFileOutputContext(funFileName);
-      varFileContext.setSeparator(separator);
-      funFileContext.setSeparator(separator);
-      this.solutionSet = solutionSet;
-      selectFeasibleSolutions = false;
-    }
+        int numberOfVariables = solutionSet.get(0).getNumberOfVariables();
+        try {
+            for (int i = 0; i < solutionSet.size(); i++) {
+                for (int j = 0; j < numberOfVariables; j++) {
+                    bufferedWriter.write(solutionSet.get(i).getVariableValueString(j) + context.getSeparator());
 
-    public Printer setVarFileOutputContext(FileOutputContext fileContext) {
-      varFileContext = fileContext;
 
-      return this;
-    }
-
-    public Printer setFunFileOutputContext(FileOutputContext fileContext) {
-      funFileContext = fileContext;
-
-      return this;
-    }
-
-    public Printer selectFeasibleSolutions() {
-
-      return this;
-    }
-
-    public Printer setSeparator(String separator) {
-      this.separator = separator;
-      varFileContext.setSeparator(this.separator);
-      funFileContext.setSeparator(this.separator);
-
-      return this;
-    }
-
-    public void print()  {
-        printObjectivesToFile(funFileContext, solutionSet);
-        printVariablesToFile(varFileContext, solutionSet);
-    }
-  }
-
-  static public void printVariablesToFile(FileOutputContext context, List<? extends Solution<?>> solutionSet) {
-    BufferedWriter bufferedWriter = context.getFileWriter();
-
-    int numberOfVariables = solutionSet.get(0).getNumberOfVariables();
-    try {
-      for (int i = 0; i < solutionSet.size(); i++) {
-        for (int j = 0; j < numberOfVariables; j++) {
-          bufferedWriter.write(solutionSet.get(i).getVariableValueString(j) + context.getSeparator());
+                }
+                if (numberOfVariables < 30) {
+                    for (int j = 0; j < 30 - numberOfVariables; j++) {
+                        bufferedWriter.write("NaN" + context.getSeparator());
+                    }
+                }
+                bufferedWriter.newLine();
+            }
+            bufferedWriter.write("NaN"
+                            + context.getSeparator()
+                            + "NaN"
+            );
+            bufferedWriter.write(System.getProperty("line.separator"));
+            bufferedWriter.close();
+        } catch (IOException e) {
+            throw new JMetalException("Exception when printing variables to file", e);
         }
-        bufferedWriter.newLine();
-      }
-      bufferedWriter.close();
-    } catch (IOException e) {
-      throw new JMetalException("Exception when printing variables to file", e) ;
     }
-  }
 
-  static public void printObjectivesToFile(FileOutputContext context, List<? extends Solution<?>> solutionSet) {
-    BufferedWriter bufferedWriter = context.getFileWriter();
+    static public void printObjectivesToFile(FileOutputContext context, List<? extends Solution<?>> solutionSet) {
+        BufferedWriter bufferedWriter = context.getFileWriter();
 
-    int numberOfObjectives = solutionSet.get(0).getNumberOfObjectives();
-    try {
-      for (int i = 0; i < solutionSet.size(); i++) {
-        for (int j = 0; j < numberOfObjectives; j++) {
-          bufferedWriter.write(solutionSet.get(i).getObjective(j) + context.getSeparator());
+        int numberOfObjectives = solutionSet.get(0).getNumberOfObjectives();
+        try {
+            for (int i = 0; i < solutionSet.size(); i++) {
+                for (int j = 0; j < numberOfObjectives; j++) {
+                    bufferedWriter.write(solutionSet.get(i).getObjective(j) + context.getSeparator());
+
+                }
+                if (numberOfObjectives == 2) {
+                    bufferedWriter.write("NaN" + context.getSeparator());
+                }
+                bufferedWriter.newLine();
+            }
+            bufferedWriter.write("NaN"
+                            + context.getSeparator()
+                            + "NaN"
+                            + context.getSeparator()
+                            + "NaN"
+            );
+            bufferedWriter.write(System.getProperty("line.separator"));
+            bufferedWriter.close();
+        } catch (IOException e) {
+            throw new JMetalException("Exception when printing objectives to file", e);
         }
-        bufferedWriter.newLine();
-      }
-      bufferedWriter.close();
-    } catch (IOException e) {
-      throw new JMetalException("Exception when printing objectives to file", e) ;
     }
-  }
 
-  /*
-   * Wrappers for printing with default configuration
-   */
-  public static void printObjectivesToFile(List<? extends Solution<?>> solutionSet, String fileName) throws IOException {
-    printObjectivesToFile(new DefaultFileOutputContext(fileName), solutionSet);
-  }
+    /*
+     * Wrappers for printing with default configuration
+     */
+    public static void printObjectivesToFile(List<? extends Solution<?>> solutionSet, String fileName) throws IOException {
+        printObjectivesToFile(new DefaultFileOutputContext(fileName), solutionSet);
+    }
 
-  public static void printVariablesToFile(List<? extends Solution<?>> solutionSet, String fileName) throws IOException {
-    printVariablesToFile(new DefaultFileOutputContext(fileName), solutionSet);
-  }
+    public static void printVariablesToFile(List<? extends Solution<?>> solutionSet, String fileName) throws IOException {
+        printVariablesToFile(new DefaultFileOutputContext(fileName), solutionSet);
+    }
+
+    public static class Printer {
+        private FileOutputContext varFileContext;
+        private FileOutputContext funFileContext;
+        private String varFileName = "VAR";
+        private String funFileName = "FUN";
+        private String separator = "\t";
+        private List<? extends Solution<?>> solutionSet;
+        private boolean selectFeasibleSolutions;
+
+        public Printer(List<? extends Solution<?>> solutionSet) {
+            varFileContext = new DefaultFileOutputContext(varFileName);
+            funFileContext = new DefaultFileOutputContext(funFileName);
+            varFileContext.setSeparator(separator);
+            funFileContext.setSeparator(separator);
+            this.solutionSet = solutionSet;
+            selectFeasibleSolutions = false;
+        }
+
+        public Printer setVarFileOutputContext(FileOutputContext fileContext) {
+            varFileContext = fileContext;
+
+            return this;
+        }
+
+        public Printer setFunFileOutputContext(FileOutputContext fileContext) {
+            funFileContext = fileContext;
+
+            return this;
+        }
+
+        public Printer selectFeasibleSolutions() {
+
+            return this;
+        }
+
+        public Printer setSeparator(String separator) {
+            this.separator = separator;
+            varFileContext.setSeparator(this.separator);
+            funFileContext.setSeparator(this.separator);
+
+            return this;
+        }
+
+        public void print() {
+            printObjectivesToFile(funFileContext, solutionSet);
+            printVariablesToFile(varFileContext, solutionSet);
+        }
+    }
 
 }

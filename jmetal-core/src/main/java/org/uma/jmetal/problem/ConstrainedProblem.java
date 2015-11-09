@@ -21,9 +21,9 @@ import org.uma.jmetal.solution.Solution;
  */
 public interface ConstrainedProblem<S extends Solution<?>> extends Problem<S> {
 
-	/* Getters */
-	public int getNumberOfConstraints() ;
-	
-	/* Methods */
-  public void evaluateConstraints(S solution) ;
+    /* Getters */
+    public int getNumberOfConstraints();
+
+    /* Methods */
+    public void evaluateConstraints(S solution);
 }

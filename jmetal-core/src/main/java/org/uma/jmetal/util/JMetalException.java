@@ -22,14 +22,16 @@ import java.util.logging.Level;
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public class JMetalException extends RuntimeException implements Serializable {
-  public JMetalException(String message) {
-    super(message);
-  }
-  public JMetalException(Exception e) {
-    JMetalLogger.logger.log(Level.SEVERE, "Error", e);
-  }
-  public JMetalException(String message, Exception e) {
-    JMetalLogger.logger.log(Level.SEVERE, message, e);
-  }
+    public JMetalException(String message) {
+        super(message);
+    }
+
+    public JMetalException(Exception e) {
+        JMetalLogger.logger.log(Level.SEVERE, "Error", e);
+    }
+
+    public JMetalException(String message, Exception e) {
+        JMetalLogger.logger.log(Level.SEVERE, message, e);
+    }
 
 }

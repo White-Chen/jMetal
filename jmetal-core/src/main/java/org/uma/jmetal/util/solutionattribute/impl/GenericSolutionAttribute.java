@@ -21,21 +21,21 @@ import org.uma.jmetal.util.solutionattribute.SolutionAttribute;
  *
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
-public class GenericSolutionAttribute <S extends Solution<?>, V> implements SolutionAttribute<S, V>{
+public class GenericSolutionAttribute<S extends Solution<?>, V> implements SolutionAttribute<S, V> {
 
-  @SuppressWarnings("unchecked")
-  @Override
-  public V getAttribute(S solution) {
-    return (V)solution.getAttribute(getAttributeID());
-  }
+    @SuppressWarnings("unchecked")
+    @Override
+    public V getAttribute(S solution) {
+        return (V) solution.getAttribute(getAttributeID());
+    }
 
-  @Override
-  public void setAttribute(S solution, V value) {
-     solution.setAttribute(getAttributeID(), value);
-  }
+    @Override
+    public void setAttribute(S solution, V value) {
+        solution.setAttribute(getAttributeID(), value);
+    }
 
-  @Override
-  public Object getAttributeID() {
-    return this.getClass() ;
-  }
+    @Override
+    public Object getAttributeID() {
+        return this.getClass();
+    }
 }

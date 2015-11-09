@@ -15,44 +15,44 @@ import java.util.List;
 import static org.junit.Assert.assertTrue;
 
 public class SMPSOIT {
-  Algorithm<List<DoubleSolution>> algorithm;
+    Algorithm<List<DoubleSolution>> algorithm;
 
-  @Test
-  public void shouldTheAlgorithmReturnANumberOfSolutionsWhenSolvingASimpleProblem() throws Exception {
-    DoubleProblem problem = new ZDT4() ;
+    @Test
+    public void shouldTheAlgorithmReturnANumberOfSolutionsWhenSolvingASimpleProblem() throws Exception {
+        DoubleProblem problem = new ZDT4();
 
-    algorithm = new SMPSOBuilder(problem, new CrowdingDistanceArchive<DoubleSolution>(100)).build() ;
+        algorithm = new SMPSOBuilder(problem, new CrowdingDistanceArchive<DoubleSolution>(100)).build();
 
-    AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
-        .execute();
+        AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
+                .execute();
 
-    List<DoubleSolution> population = algorithm.getResult();
+        List<DoubleSolution> population = algorithm.getResult();
 
     /*
     Rationale: the default problem is ZDT4, and SMPSO, configured with standard settings, should
     return 100 solutions
     */
-    assertTrue(population.size() >= 98) ;
-  }
+        assertTrue(population.size() >= 98);
+    }
 
-  @Test
-  public void shouldTheHypervolumeHaveAMininumValue() throws Exception {
-    DoubleProblem problem = new ZDT4() ;
+    @Test
+    public void shouldTheHypervolumeHaveAMininumValue() throws Exception {
+        DoubleProblem problem = new ZDT4();
 
-    algorithm = new SMPSOBuilder(problem, new CrowdingDistanceArchive<DoubleSolution>(100)).build() ;
+        algorithm = new SMPSOBuilder(problem, new CrowdingDistanceArchive<DoubleSolution>(100)).build();
 
-    AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
-        .execute();
+        AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
+                .execute();
 
-    List<DoubleSolution> population = algorithm.getResult();
+        List<DoubleSolution> population = algorithm.getResult();
 
-    QualityIndicator<List<DoubleSolution>, Double> hypervolume = new Hypervolume<>("/referenceFronts/ZDT4.pf") ;
+        QualityIndicator<List<DoubleSolution>, Double> hypervolume = new Hypervolume<>("/referenceFronts/ZDT4.pf");
 
-    // Rationale: the default problem is ZDT4, and SMPSO, configured with standard settings, should
-    // return find a front with a hypervolume value higher than 0.64
+        // Rationale: the default problem is ZDT4, and SMPSO, configured with standard settings, should
+        // return find a front with a hypervolume value higher than 0.64
 
-    double hv = (Double)hypervolume.evaluate(population) ;
+        double hv = (Double) hypervolume.evaluate(population);
 
-    assertTrue(hv > 0.64) ;
-  }
+        assertTrue(hv > 0.64);
+    }
 }

@@ -35,32 +35,32 @@ import static org.junit.Assert.assertEquals;
  * Created by Antonio on 15/09/14.
  */
 public class DominanceRankingTest {
-  @Mock
-  private DoubleProblem problem ;
+    @Mock
+    private DoubleProblem problem;
 
-  @Test
-  public void rankingOfAnEmptyPopulation() {
-    List<Solution<?>> population = Collections.emptyList() ;
-    Ranking<Solution<?>> ranking = new DominanceRanking<Solution<?>>() ;
-    ranking.computeRanking(population) ;
-    assertEquals(0, ranking.getNumberOfSubfronts()) ;
-  }
+    @Test
+    public void rankingOfAnEmptyPopulation() {
+        List<Solution<?>> population = Collections.emptyList();
+        Ranking<Solution<?>> ranking = new DominanceRanking<Solution<?>>();
+        ranking.computeRanking(population);
+        assertEquals(0, ranking.getNumberOfSubfronts());
+    }
 
-  @Test (expected = JMetalException.class)
-  public void rankingOfAnPopulationOfSizeOne(){
-    problem = Mockito.mock(DoubleProblem.class) ;
-    List<DoubleSolution> population = Arrays.<DoubleSolution>asList(
-            new DefaultDoubleSolution(problem),
-            new DefaultDoubleSolution(problem),
-            new DefaultDoubleSolution(problem));
+    @Test(expected = JMetalException.class)
+    public void rankingOfAnPopulationOfSizeOne() {
+        problem = Mockito.mock(DoubleProblem.class);
+        List<DoubleSolution> population = Arrays.<DoubleSolution>asList(
+                new DefaultDoubleSolution(problem),
+                new DefaultDoubleSolution(problem),
+                new DefaultDoubleSolution(problem));
 
-    Ranking<DoubleSolution> ranking = new DominanceRanking<DoubleSolution>() ;
-    ranking.computeRanking(population) ;
+        Ranking<DoubleSolution> ranking = new DominanceRanking<DoubleSolution>();
+        ranking.computeRanking(population);
 
-    assertEquals(1, ranking.getNumberOfSubfronts());
-    assertNotNull(ranking.getSubfront(0));
-    assertNull(ranking.getSubfront(1)) ;
-  }
+        assertEquals(1, ranking.getNumberOfSubfronts());
+        assertNotNull(ranking.getSubfront(0));
+        assertNull(ranking.getSubfront(1));
+    }
 /*
   @Test
   public void rankingOfAnPopulationWithTwoNonDominatedSolutions() {

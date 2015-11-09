@@ -17,14 +17,15 @@ import org.uma.jmetal.solution.Solution;
 
 import java.util.List;
 
-public class LocationAttribute <S extends Solution<?>>
-		extends GenericSolutionAttribute<S, Integer> {
+public class LocationAttribute<S extends Solution<?>>
+        extends GenericSolutionAttribute<S, Integer> {
 
-	public LocationAttribute() {}
+    public LocationAttribute() {
+    }
 
-	public LocationAttribute(List<S> source) {
-		int location = 0;
-		for (S s : source)
-			s.setAttribute(getAttributeID(), location++);
-	}
+    public LocationAttribute(List<S> source) {
+        int location = 0;
+        for (S s : source)
+            s.setAttribute(getAttributeID(), location++);
+    }
 }

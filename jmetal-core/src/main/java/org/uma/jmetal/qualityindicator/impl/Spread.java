@@ -43,96 +43,99 @@ import java.util.List;
  * @author Juan J. Durillo
  */
 public class Spread<Evaluate extends List<? extends Solution<?>>>
-    extends SimpleDescribedEntity
-    implements QualityIndicator<Evaluate,Double> {
+        extends SimpleDescribedEntity
+        implements QualityIndicator<Evaluate, Double> {
 
-  private Front referenceParetoFront ;
+    private Front referenceParetoFront;
 
-  /**
-   * Constructor
-   *
-   * @param referenceParetoFrontFile
-   * @throws FileNotFoundException
-   */
-  public Spread(String referenceParetoFrontFile) throws FileNotFoundException {
-    super("SPREAD", "SPREAD quality indicator") ;
-    if (referenceParetoFrontFile == null) {
-      throw new JMetalException("The pareto front object is null");
+    /**
+     * Constructor
+     *
+     * @param referenceParetoFrontFile
+     * @throws FileNotFoundException
+     */
+    public Spread(String referenceParetoFrontFile) throws FileNotFoundException {
+        super("SPREAD", "SPREAD quality indicator");
+        if (referenceParetoFrontFile == null) {
+            throw new JMetalException("The pareto front object is null");
+        }
+
+        Front front = new ArrayFront(referenceParetoFrontFile);
+        referenceParetoFront = front;
     }
 
-    Front front = new ArrayFront(referenceParetoFrontFile);
-    referenceParetoFront = front ;
-  }
+    /**
+     * Constructor
+     *
+     * @param referenceParetoFront
+     * @throws FileNotFoundException
+     */
+    public Spread(Front referenceParetoFront) {
+        super("SPREAD", "SPREAD quality indicator");
+        if (referenceParetoFront == null) {
+            throw new JMetalException("The pareto front is null");
+        }
 
-  /**
-   * Constructor
-   *
-   * @param referenceParetoFront
-   * @throws FileNotFoundException
-   */
-  public Spread(Front referenceParetoFront) {
-    super("SPREAD", "SPREAD quality indicator") ;
-    if (referenceParetoFront == null) {
-      throw new JMetalException("The pareto front is null");
+        this.referenceParetoFront = referenceParetoFront;
     }
 
-    this.referenceParetoFront = referenceParetoFront ;
-  }
-
-  /**
-   * Evaluate() method
-   * @param solutionList
-   * @return
-   */
-  @Override public Double evaluate(Evaluate solutionList) {
-    return spread(new ArrayFront(solutionList), referenceParetoFront);
-  }
-
-  /**
-   * Calculates the Spread metric.
-   *
-   * @param front              The front.
-   * @param referenceFront    The true pareto front.
-   */
-  public double spread(Front front, Front referenceFront) {
-    PointDistance distance = new EuclideanDistance() ;
-
-    // STEP 1. Sort normalizedFront and normalizedParetoFront;
-    front.sort(new LexicographicalPointComparator());
-    referenceFront.sort(new LexicographicalPointComparator());
-
-    // STEP 2. Compute df and dl (See specifications in Deb's description of the metric)
-    double df = distance.compute(front.getPoint(0), referenceFront.getPoint(0)) ;
-    double dl = distance.compute(front.getPoint(front.getNumberOfPoints() - 1),
-        referenceFront.getPoint(referenceFront.getNumberOfPoints() - 1)) ;
-
-    double mean = 0.0;
-    double diversitySum = df + dl;
-
-    int numberOfPoints = front.getNumberOfPoints() ;
-
-    // STEP 3. Calculate the mean of distances between points i and (i - 1).
-    // (the points are in lexicografical order)
-    for (int i = 0; i < (numberOfPoints - 1); i++) {
-      mean += distance.compute(front.getPoint(i), front.getPoint(i + 1));
+    /**
+     * Evaluate() method
+     *
+     * @param solutionList
+     * @return
+     */
+    @Override
+    public Double evaluate(Evaluate solutionList) {
+        return spread(new ArrayFront(solutionList), referenceParetoFront);
     }
 
-    mean = mean / (double) (numberOfPoints - 1);
+    /**
+     * Calculates the Spread metric.
+     *
+     * @param front          The front.
+     * @param referenceFront The true pareto front.
+     */
+    public double spread(Front front, Front referenceFront) {
+        PointDistance distance = new EuclideanDistance();
 
-    // STEP 4. If there are more than a single point, continue computing the
-    // metric. In other case, return the worse value (1.0, see metric's description).
-    if (numberOfPoints > 1) {
-      for (int i = 0; i < (numberOfPoints - 1); i++) {
-        diversitySum += Math.abs(distance.compute(front.getPoint(i),
-            front.getPoint(i + 1)) - mean);
-      }
-      return diversitySum / (df + dl + (numberOfPoints - 1) * mean);
-    } else {
-      return 1.0;
+        // STEP 1. Sort normalizedFront and normalizedParetoFront;
+        front.sort(new LexicographicalPointComparator());
+        referenceFront.sort(new LexicographicalPointComparator());
+
+        // STEP 2. Compute df and dl (See specifications in Deb's description of the metric)
+        double df = distance.compute(front.getPoint(0), referenceFront.getPoint(0));
+        double dl = distance.compute(front.getPoint(front.getNumberOfPoints() - 1),
+                referenceFront.getPoint(referenceFront.getNumberOfPoints() - 1));
+
+        double mean = 0.0;
+        double diversitySum = df + dl;
+
+        int numberOfPoints = front.getNumberOfPoints();
+
+        // STEP 3. Calculate the mean of distances between points i and (i - 1).
+        // (the points are in lexicografical order)
+        for (int i = 0; i < (numberOfPoints - 1); i++) {
+            mean += distance.compute(front.getPoint(i), front.getPoint(i + 1));
+        }
+
+        mean = mean / (double) (numberOfPoints - 1);
+
+        // STEP 4. If there are more than a single point, continue computing the
+        // metric. In other case, return the worse value (1.0, see metric's description).
+        if (numberOfPoints > 1) {
+            for (int i = 0; i < (numberOfPoints - 1); i++) {
+                diversitySum += Math.abs(distance.compute(front.getPoint(i),
+                        front.getPoint(i + 1)) - mean);
+            }
+            return diversitySum / (df + dl + (numberOfPoints - 1) * mean);
+        } else {
+            return 1.0;
+        }
     }
-  }
 
-  @Override public String getName() {
-    return super.getName() ;
-  }
+    @Override
+    public String getName() {
+        return super.getName();
+    }
 }

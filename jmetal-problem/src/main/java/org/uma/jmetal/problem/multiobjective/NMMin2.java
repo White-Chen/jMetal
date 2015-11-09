@@ -34,62 +34,66 @@ import java.util.List;
  * Objective 2: minimizing the distance to value M
  */
 public class NMMin2 extends AbstractIntegerDoubleProblem<IntegerDoubleSolution> {
-  private int valueN ;
-  private int valueM ;
+    private int valueN;
+    private int valueM;
 
-  public NMMin2() {
-    this(10, 10, 100, -100, -1000, +1000);
-  }
-
-  /** Constructor */
-  public NMMin2(int numberOfIntegerVariables, int numberOfDoubleVariables, int n, int m, int lowerBound, int upperBound)  {
-    setNumberOfIntegerVariables(numberOfIntegerVariables);
-    setNumberOfDoubleVariables(numberOfDoubleVariables);
-    valueN = n ;
-    valueM = m ;
-    setNumberOfVariables(numberOfIntegerVariables+numberOfDoubleVariables);
-    setNumberOfObjectives(2);
-    setName("NMMin");
-
-    List<Number> lowerLimit = new ArrayList<>(getNumberOfVariables()) ;
-    List<Number> upperLimit = new ArrayList<>(getNumberOfVariables()) ;
-
-    for (int i = 0; i < getNumberOfVariables(); i++) {
-      lowerLimit.add(lowerBound);
-      upperLimit.add(upperBound);
+    public NMMin2() {
+        this(10, 10, 100, -100, -1000, +1000);
     }
 
-    setLowerLimit(lowerLimit);
-    setUpperLimit(upperLimit);
-  }
+    /**
+     * Constructor
+     */
+    public NMMin2(int numberOfIntegerVariables, int numberOfDoubleVariables, int n, int m, int lowerBound, int upperBound) {
+        setNumberOfIntegerVariables(numberOfIntegerVariables);
+        setNumberOfDoubleVariables(numberOfDoubleVariables);
+        valueN = n;
+        valueM = m;
+        setNumberOfVariables(numberOfIntegerVariables + numberOfDoubleVariables);
+        setNumberOfObjectives(2);
+        setName("NMMin");
 
-  @Override
-  public IntegerDoubleSolution createSolution() {
-    return new DefaultIntegerDoubleSolution(this) ;
-  }
+        List<Number> lowerLimit = new ArrayList<>(getNumberOfVariables());
+        List<Number> upperLimit = new ArrayList<>(getNumberOfVariables());
 
-  /** Evaluate() method */
-  @Override
-  public void evaluate(IntegerDoubleSolution solution) {
-    int approximationToN;
-    int approximationToM ;
+        for (int i = 0; i < getNumberOfVariables(); i++) {
+            lowerLimit.add(lowerBound);
+            upperLimit.add(upperBound);
+        }
 
-    approximationToN = 0;
-    approximationToM = 0;
-
-    for (int i = 0; i < solution.getNumberOfIntegerVariables(); i++) {
-      int value = solution.getVariableValue(i).intValue() ;
-      approximationToN += Math.abs(valueN - value) ;
-      approximationToM += Math.abs(valueM - value) ;
+        setLowerLimit(lowerLimit);
+        setUpperLimit(upperLimit);
     }
 
-    for (int i = solution.getNumberOfIntegerVariables(); i < (solution.getNumberOfIntegerVariables()+solution.getNumberOfDoubleVariables()); i++) {
-      double value = solution.getVariableValue(i).doubleValue() ;
-      approximationToN += Math.abs(valueN - value) ;
-      approximationToM += Math.abs(valueM - value) ;
+    @Override
+    public IntegerDoubleSolution createSolution() {
+        return new DefaultIntegerDoubleSolution(this);
     }
 
-    solution.setObjective(0, approximationToN);
-    solution.setObjective(1, approximationToM);
-  }
+    /**
+     * Evaluate() method
+     */
+    @Override
+    public void evaluate(IntegerDoubleSolution solution) {
+        int approximationToN;
+        int approximationToM;
+
+        approximationToN = 0;
+        approximationToM = 0;
+
+        for (int i = 0; i < solution.getNumberOfIntegerVariables(); i++) {
+            int value = solution.getVariableValue(i).intValue();
+            approximationToN += Math.abs(valueN - value);
+            approximationToM += Math.abs(valueM - value);
+        }
+
+        for (int i = solution.getNumberOfIntegerVariables(); i < (solution.getNumberOfIntegerVariables() + solution.getNumberOfDoubleVariables()); i++) {
+            double value = solution.getVariableValue(i).doubleValue();
+            approximationToN += Math.abs(valueN - value);
+            approximationToM += Math.abs(valueM - value);
+        }
+
+        solution.setObjective(0, approximationToN);
+        solution.setObjective(1, approximationToM);
+    }
 }

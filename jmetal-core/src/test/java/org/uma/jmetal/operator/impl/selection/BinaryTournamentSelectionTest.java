@@ -32,7 +32,8 @@ import java.util.List;
 
 import static junit.framework.TestCase.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -42,87 +43,88 @@ import static org.mockito.Mockito.*;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class BinaryTournamentSelectionTest {
-  private static final int POPULATION_SIZE = 20 ;
+    private static final int POPULATION_SIZE = 20;
 
-  @Mock private Problem<Solution<Object>> problem ;
-  private List<Solution<Object>> population ;
+    @Mock
+    private Problem<Solution<Object>> problem;
+    private List<Solution<Object>> population;
 
-  @Test (expected = JMetalException.class)
-  public void shouldExecuteRaiseAnExceptionIfTheListOfSolutionsIsNull() {
-    population = null ;
-    BinaryTournamentSelection<Solution<Object>> selection = new BinaryTournamentSelection<Solution<Object>>() ;
-    selection.execute(population) ;
-  }
-
-  @Test (expected = JMetalException.class)
-  public void shouldExecuteRaiseAnExceptionIfTheListOfSolutionsIsEmpty() {
-    population = new ArrayList<>(0) ;
-    BinaryTournamentSelection<Solution<Object>> selection = new BinaryTournamentSelection<Solution<Object>>() ;
-    selection.execute(population) ;
-  }
-
-  @Test
-  public void shouldExecuteReturnAValidSolutionIsWithCorrectParameters() {
-	  Solution<Object> solution = mock(Solution.class) ;
-
-    Mockito.when(problem.createSolution()).thenReturn(solution) ;
-
-    population = new ArrayList<>(POPULATION_SIZE) ;
-    for (int i = 0 ; i < POPULATION_SIZE; i++) {
-      population.add(problem.createSolution());
+    @Test(expected = JMetalException.class)
+    public void shouldExecuteRaiseAnExceptionIfTheListOfSolutionsIsNull() {
+        population = null;
+        BinaryTournamentSelection<Solution<Object>> selection = new BinaryTournamentSelection<Solution<Object>>();
+        selection.execute(population);
     }
-    BinaryTournamentSelection<Solution<Object>> selection = new BinaryTournamentSelection<Solution<Object>>() ;
-    assertNotNull(selection.execute(population));
-    verify(problem, times(POPULATION_SIZE)).createSolution();
-  }
 
-  @Test
-  public void shouldExecuteReturnTheSameSolutionIfTheListContainsOneSolution() {
-	  Solution<Object> solution = mock(Solution.class) ;
+    @Test(expected = JMetalException.class)
+    public void shouldExecuteRaiseAnExceptionIfTheListOfSolutionsIsEmpty() {
+        population = new ArrayList<>(0);
+        BinaryTournamentSelection<Solution<Object>> selection = new BinaryTournamentSelection<Solution<Object>>();
+        selection.execute(population);
+    }
 
-    population = new ArrayList<>(1) ;
-    population.add(solution) ;
-    BinaryTournamentSelection<Solution<Object>> selection = new BinaryTournamentSelection<Solution<Object>>() ;
-    assertSame(solution, selection.execute(population));
-  }
+    @Test
+    public void shouldExecuteReturnAValidSolutionIsWithCorrectParameters() {
+        Solution<Object> solution = mock(Solution.class);
 
-  @Test
-  public void shouldExecuteReturnTwoSolutionsIfTheListContainsTwoSolutions() {
-    Solution<Object> solution1 = mock(Solution.class) ;
-    Solution<Object> solution2 = mock(Solution.class) ;
+        Mockito.when(problem.createSolution()).thenReturn(solution);
 
-    population = Arrays.asList(solution1, solution2) ;
-    assertEquals(2, population.size());
-  }
+        population = new ArrayList<>(POPULATION_SIZE);
+        for (int i = 0; i < POPULATION_SIZE; i++) {
+            population.add(problem.createSolution());
+        }
+        BinaryTournamentSelection<Solution<Object>> selection = new BinaryTournamentSelection<Solution<Object>>();
+        assertNotNull(selection.execute(population));
+        verify(problem, times(POPULATION_SIZE)).createSolution();
+    }
 
-  @Test
-  public void shouldExecuteWorkProperlyIfTheTwoSolutionsInTheListAreNondominated() {
-    Comparator<DoubleSolution> comparator = mock(Comparator.class) ;
+    @Test
+    public void shouldExecuteReturnTheSameSolutionIfTheListContainsOneSolution() {
+        Solution<Object> solution = mock(Solution.class);
 
-    DoubleSolution solution1 = mock(DoubleSolution.class) ;
-    Mockito.when(solution1.getNumberOfObjectives()).thenReturn(2) ;
-    Mockito.when(solution1.getObjective(0)).thenReturn(1.0) ;
-    Mockito.when(solution1.getObjective(1)).thenReturn(2.0) ;
+        population = new ArrayList<>(1);
+        population.add(solution);
+        BinaryTournamentSelection<Solution<Object>> selection = new BinaryTournamentSelection<Solution<Object>>();
+        assertSame(solution, selection.execute(population));
+    }
 
-    DoubleSolution solution2 = mock(DoubleSolution.class) ;
-    Mockito.when(solution2.getNumberOfObjectives()).thenReturn(1) ;
-    Mockito.when(solution2.getObjective(0)).thenReturn(2.0) ;
-    Mockito.when(solution2.getObjective(1)).thenReturn(1.0) ;
+    @Test
+    public void shouldExecuteReturnTwoSolutionsIfTheListContainsTwoSolutions() {
+        Solution<Object> solution1 = mock(Solution.class);
+        Solution<Object> solution2 = mock(Solution.class);
 
-    Mockito.when(comparator.compare(solution1, solution2)).thenReturn(0) ;
+        population = Arrays.asList(solution1, solution2);
+        assertEquals(2, population.size());
+    }
 
-    List<DoubleSolution> population = Arrays.<DoubleSolution>asList(solution1, solution2);
+    @Test
+    public void shouldExecuteWorkProperlyIfTheTwoSolutionsInTheListAreNondominated() {
+        Comparator<DoubleSolution> comparator = mock(Comparator.class);
 
-    BinaryTournamentSelection<DoubleSolution> selection = new BinaryTournamentSelection<DoubleSolution>(comparator) ;
-    DoubleSolution result = (DoubleSolution) selection.execute(population);
+        DoubleSolution solution1 = mock(DoubleSolution.class);
+        Mockito.when(solution1.getNumberOfObjectives()).thenReturn(2);
+        Mockito.when(solution1.getObjective(0)).thenReturn(1.0);
+        Mockito.when(solution1.getObjective(1)).thenReturn(2.0);
 
-    assertThat(result, Matchers.either(Matchers.is(solution1)).or(Matchers.is(solution2))) ;
-    verify(comparator).compare(any(DoubleSolution.class), any(DoubleSolution.class));
-  }
+        DoubleSolution solution2 = mock(DoubleSolution.class);
+        Mockito.when(solution2.getNumberOfObjectives()).thenReturn(1);
+        Mockito.when(solution2.getObjective(0)).thenReturn(2.0);
+        Mockito.when(solution2.getObjective(1)).thenReturn(1.0);
 
-  @After
-  public void tearDown() {
-    population = null ;
-    problem = null ;
-  }
+        Mockito.when(comparator.compare(solution1, solution2)).thenReturn(0);
+
+        List<DoubleSolution> population = Arrays.<DoubleSolution>asList(solution1, solution2);
+
+        BinaryTournamentSelection<DoubleSolution> selection = new BinaryTournamentSelection<DoubleSolution>(comparator);
+        DoubleSolution result = (DoubleSolution) selection.execute(population);
+
+        assertThat(result, Matchers.either(Matchers.is(solution1)).or(Matchers.is(solution2)));
+        verify(comparator).compare(any(DoubleSolution.class), any(DoubleSolution.class));
+    }
+
+    @After
+    public void tearDown() {
+        population = null;
+        problem = null;
+    }
 }

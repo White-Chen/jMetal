@@ -16,13 +16,16 @@ package org.uma.jmetal.util.parallel;
 
 /**
  * Interface representing classes for running tasks in parallel
-
+ *
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 
 public interface SynchronousParallelTaskExecutor {
-  public void start(Object configuration);
-  public void addTask(Object[] taskParameters);
-  Object parallelExecution();
-  public void stop() ;
+    public void start(Object configuration);
+
+    public void addTask(Object[] taskParameters);
+
+    Object parallelExecution();
+
+    public void stop();
 }

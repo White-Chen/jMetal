@@ -26,37 +26,55 @@ import java.io.OutputStreamWriter;
  *
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
-public class  DefaultFileOutputContext implements FileOutputContext {
-  private static final String DEFAULT_SEPARATOR = " " ;
+public class DefaultFileOutputContext implements FileOutputContext {
+    private static final String DEFAULT_SEPARATOR = " ";
 
-  protected String fileName;
-  protected String separator;
+    protected String fileName;
+    protected String separator;
+    protected boolean isAppend;
 
-  public DefaultFileOutputContext(String fileName) {
-    this.fileName = fileName ;
-    this.separator = DEFAULT_SEPARATOR ;
-  }
-
-  @Override
-  public BufferedWriter getFileWriter() {
-    FileOutputStream outputStream ;
-    try {
-      outputStream = new FileOutputStream(fileName);
-    } catch (FileNotFoundException e) {
-      throw new JMetalException("Exception when calling method getFileWriter()", e) ;
+    public DefaultFileOutputContext(String fileName) {
+        this.fileName = fileName;
+        this.separator = DEFAULT_SEPARATOR;
+        this.isAppend = false;
     }
-    OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
 
-    return new BufferedWriter(outputStreamWriter);
-  }
+    public DefaultFileOutputContext(String fileName, boolean isAppend) {
+        this.fileName = fileName;
+        this.separator = DEFAULT_SEPARATOR;
+        this.isAppend = isAppend;
+    }
 
-  @Override
-  public String getSeparator() {
-    return separator;
-  }
+    @Override
+    public BufferedWriter getFileWriter() {
+        FileOutputStream outputStream;
+        try {
+            outputStream = new FileOutputStream(fileName, isAppend);
+        } catch (FileNotFoundException e) {
+            throw new JMetalException("Exception when calling method getFileWriter()", e);
+        }
+        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
 
-  @Override
-  public void setSeparator(String separator) {
-    this.separator = separator;
-  }
+        return new BufferedWriter(outputStreamWriter);
+    }
+
+    @Override
+    public String getSeparator() {
+        return separator;
+    }
+
+    @Override
+    public void setSeparator(String separator) {
+        this.separator = separator;
+    }
+
+    @Override
+    public boolean getIsAppend() {
+        return isAppend;
+    }
+
+    @Override
+    public void setIsAppend(boolean isAppend) {
+        this.isAppend = isAppend;
+    }
 }

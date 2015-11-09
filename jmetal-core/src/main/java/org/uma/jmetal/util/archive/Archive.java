@@ -22,9 +22,12 @@ import java.util.List;
  *
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
-public interface Archive<S extends Solution<?>> extends Serializable{
-  public boolean add(S solution) ;
-  public S get(int index) ;
-  public List<S> getSolutionList() ;
-  public int size() ;
+public interface Archive<S extends Solution<?>> extends Serializable {
+    public boolean add(S solution);
+
+    public S get(int index);
+
+    public List<S> getSolutionList();
+
+    public int size();
 }

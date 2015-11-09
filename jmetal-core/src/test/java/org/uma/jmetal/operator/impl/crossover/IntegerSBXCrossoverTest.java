@@ -27,7 +27,7 @@ import java.util.List;
  * @version 1.0
  */
 public class IntegerSBXCrossoverTest {
-  private static final double EPSILON = 0.00000000000001 ;
+    private static final double EPSILON = 0.00000000000001;
 /*
   @Test
   public void shouldConstructorAssignTheCorrectProbabilityValue() {
@@ -239,33 +239,38 @@ public class IntegerSBXCrossoverTest {
   }
 
 */
-  /**
-   * Mock class representing an Integer problem
-   */
-  private class MockIntegerProblem extends AbstractIntegerProblem {
 
-    /** Constructor */
-    public MockIntegerProblem(Integer numberOfVariables) {
-      setNumberOfVariables(numberOfVariables);
-      setNumberOfObjectives(2);
+    /**
+     * Mock class representing an Integer problem
+     */
+    private class MockIntegerProblem extends AbstractIntegerProblem {
 
-      List<Integer> lowerLimit = new ArrayList<>(getNumberOfVariables()) ;
-      List<Integer> upperLimit = new ArrayList<>(getNumberOfVariables()) ;
+        /**
+         * Constructor
+         */
+        public MockIntegerProblem(Integer numberOfVariables) {
+            setNumberOfVariables(numberOfVariables);
+            setNumberOfObjectives(2);
 
-      for (int i = 0; i < getNumberOfVariables(); i++) {
-        lowerLimit.add(-4);
-        upperLimit.add(9);
-      }
+            List<Integer> lowerLimit = new ArrayList<>(getNumberOfVariables());
+            List<Integer> upperLimit = new ArrayList<>(getNumberOfVariables());
 
-      setLowerLimit(lowerLimit);
-      setUpperLimit(upperLimit);
+            for (int i = 0; i < getNumberOfVariables(); i++) {
+                lowerLimit.add(-4);
+                upperLimit.add(9);
+            }
+
+            setLowerLimit(lowerLimit);
+            setUpperLimit(upperLimit);
+        }
+
+        /**
+         * Evaluate() method
+         */
+        @Override
+        public void evaluate(IntegerSolution solution) {
+            solution.setObjective(0, 2);
+            solution.setObjective(1, 7);
+        }
     }
-
-    /** Evaluate() method */
-    @Override
-    public void evaluate(IntegerSolution solution) {
-      solution.setObjective(0, 2);
-      solution.setObjective(1, 7);
-    }
-  }
 }

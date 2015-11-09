@@ -25,48 +25,48 @@ import java.util.Comparator;
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public class HypervolumeContributorComparator implements Comparator<Solution<?>> {
-  private final HypervolumeContribution<Solution<?>> hvContribution = new HypervolumeContribution<Solution<?>>() ;
+    private final HypervolumeContribution<Solution<?>> hvContribution = new HypervolumeContribution<Solution<?>>();
 
-  /**
-   * Compare two solutions.
-   *
-   * @param solution1 Object representing the first <code>Solution</code>.
-   * @param solution2 Object representing the second <code>Solution</code>.
-   * @return -1, or 0, or 1 if solution1 is has lower, equal, or higher contribution value than solution2,
-   * respectively.
-   */
-  @Override
-  public int compare(Solution<?> solution1, Solution<?> solution2) {
-    int result ;
-    if (solution1 == null) {
-      if (solution2 == null) {
-        result = 0;
-      } else {
-        result = 1 ;
-      }
-    } else if (solution2 == null) {
-      result = -1;
-    } else {
-      double contribution1 = Double.MAX_VALUE ;
-      double contribution2 = Double.MAX_VALUE ;
+    /**
+     * Compare two solutions.
+     *
+     * @param solution1 Object representing the first <code>Solution</code>.
+     * @param solution2 Object representing the second <code>Solution</code>.
+     * @return -1, or 0, or 1 if solution1 is has lower, equal, or higher contribution value than solution2,
+     * respectively.
+     */
+    @Override
+    public int compare(Solution<?> solution1, Solution<?> solution2) {
+        int result;
+        if (solution1 == null) {
+            if (solution2 == null) {
+                result = 0;
+            } else {
+                result = 1;
+            }
+        } else if (solution2 == null) {
+            result = -1;
+        } else {
+            double contribution1 = Double.MAX_VALUE;
+            double contribution2 = Double.MAX_VALUE;
 
-      if (hvContribution.getAttribute(solution1) != null) {
-        contribution1 = (double) hvContribution.getAttribute(solution1);
-      }
+            if (hvContribution.getAttribute(solution1) != null) {
+                contribution1 = (double) hvContribution.getAttribute(solution1);
+            }
 
-      if (hvContribution.getAttribute(solution2) != null) {
-        contribution2 = (double) hvContribution.getAttribute(solution2);
-      }
+            if (hvContribution.getAttribute(solution2) != null) {
+                contribution2 = (double) hvContribution.getAttribute(solution2);
+            }
 
-      if (contribution1 < contribution2) {
-        result = 1;
-      } else  if (contribution1 > contribution2) {
-        result = -1;
-      } else {
-        result = 0;
-      }
+            if (contribution1 < contribution2) {
+                result = 1;
+            } else if (contribution1 > contribution2) {
+                result = -1;
+            } else {
+                result = 0;
+            }
+        }
+
+        return result;
     }
-
-    return result ;
-  }
 }

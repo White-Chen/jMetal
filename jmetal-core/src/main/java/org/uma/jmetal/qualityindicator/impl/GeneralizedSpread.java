@@ -48,108 +48,111 @@ import java.util.List;
  * @author Juan J. Durillo
  */
 public class GeneralizedSpread<Evaluate extends List<? extends Solution<?>>>
-    extends SimpleDescribedEntity
-    implements QualityIndicator<Evaluate,Double> {
+        extends SimpleDescribedEntity
+        implements QualityIndicator<Evaluate, Double> {
 
-  private Front referenceParetoFront ;
+    private Front referenceParetoFront;
 
-  /**
-   * Constructor
-   *
-   * @param referenceParetoFrontFile
-   * @throws FileNotFoundException
-   */
-  public GeneralizedSpread(String referenceParetoFrontFile) throws FileNotFoundException {
-    super("GSPREAD", "Generalized SPREAD quality indicator") ;
-    if (referenceParetoFrontFile == null) {
-      throw new JMetalException("The pareto front object is null");
+    /**
+     * Constructor
+     *
+     * @param referenceParetoFrontFile
+     * @throws FileNotFoundException
+     */
+    public GeneralizedSpread(String referenceParetoFrontFile) throws FileNotFoundException {
+        super("GSPREAD", "Generalized SPREAD quality indicator");
+        if (referenceParetoFrontFile == null) {
+            throw new JMetalException("The pareto front object is null");
+        }
+
+        Front front = new ArrayFront(referenceParetoFrontFile);
+        referenceParetoFront = front;
     }
 
-    Front front = new ArrayFront(referenceParetoFrontFile);
-    referenceParetoFront = front ;
-  }
+    /**
+     * Constructor
+     *
+     * @param referenceParetoFront
+     * @throws FileNotFoundException
+     */
+    public GeneralizedSpread(Front referenceParetoFront) {
+        super("GSPREAD", "Generalized SPREAD quality indicator");
+        if (referenceParetoFront == null) {
+            throw new JMetalException("The pareto front is null");
+        }
 
-  /**
-   * Constructor
-   *
-   * @param referenceParetoFront
-   * @throws FileNotFoundException
-   */
-  public GeneralizedSpread(Front referenceParetoFront) {
-    super("GSPREAD", "Generalized SPREAD quality indicator") ;
-    if (referenceParetoFront == null) {
-      throw new JMetalException("The pareto front is null");
+        this.referenceParetoFront = referenceParetoFront;
     }
 
-    this.referenceParetoFront = referenceParetoFront ;
-  }
-
-  /**
-   * Evaluate() method
-   * @param solutionList
-   * @return
-   */
-  @Override public Double evaluate(Evaluate solutionList) {
-    return generalizedSpread(new ArrayFront(solutionList), referenceParetoFront);
-  }
-
-  /**
-   *  Calculates the generalized spread metric. Given the 
-   *  pareto front, the true pareto front as <code>double []</code>
-   *  and the number of objectives, the method return the value for the
-   *  metric.
-   *  @param front The front.
-   *  @param referenceFront The reference pareto front.
-   *  @return the value of the generalized spread metric
-   **/
-  public double generalizedSpread(Front front, Front referenceFront) {
-    int numberOfObjectives = front.getPoint(0).getNumberOfDimensions() ;
-
-    Point[] extremeValues = new Point[numberOfObjectives] ;
-    for (int i = 0; i < numberOfObjectives; i++) {
-      referenceFront.sort(new PointDimensionComparator(i));
-      Point newPoint = new ArrayPoint(numberOfObjectives) ;
-      for (int j = 0 ; j < numberOfObjectives; j++) {
-        newPoint.setDimensionValue(j,
-            referenceFront.getPoint(referenceFront.getNumberOfPoints()-1).getDimensionValue(j));
-      }
-      extremeValues[i] = newPoint ;
+    /**
+     * Evaluate() method
+     *
+     * @param solutionList
+     * @return
+     */
+    @Override
+    public Double evaluate(Evaluate solutionList) {
+        return generalizedSpread(new ArrayFront(solutionList), referenceParetoFront);
     }
 
-    int numberOfPoints = front.getNumberOfPoints();
+    /**
+     * Calculates the generalized spread metric. Given the
+     * pareto front, the true pareto front as <code>double []</code>
+     * and the number of objectives, the method return the value for the
+     * metric.
+     *
+     * @param front          The front.
+     * @param referenceFront The reference pareto front.
+     * @return the value of the generalized spread metric
+     */
+    public double generalizedSpread(Front front, Front referenceFront) {
+        int numberOfObjectives = front.getPoint(0).getNumberOfDimensions();
 
-    front.sort(new LexicographicalPointComparator());
+        Point[] extremeValues = new Point[numberOfObjectives];
+        for (int i = 0; i < numberOfObjectives; i++) {
+            referenceFront.sort(new PointDimensionComparator(i));
+            Point newPoint = new ArrayPoint(numberOfObjectives);
+            for (int j = 0; j < numberOfObjectives; j++) {
+                newPoint.setDimensionValue(j,
+                        referenceFront.getPoint(referenceFront.getNumberOfPoints() - 1).getDimensionValue(j));
+            }
+            extremeValues[i] = newPoint;
+        }
 
-    if (new EuclideanDistance().compute(front.getPoint(0),
-        front.getPoint(front.getNumberOfPoints() - 1)) == 0.0) {
-      return 1.0;
-    } else {
-      double dmean = 0.0;
+        int numberOfPoints = front.getNumberOfPoints();
 
-      for (int i = 0 ; i < front.getNumberOfPoints(); i++) {
-        dmean += FrontUtils.distanceToNearestPoint(front.getPoint(i), front);
-      }
+        front.sort(new LexicographicalPointComparator());
 
-      dmean = dmean / (numberOfPoints);
+        if (new EuclideanDistance().compute(front.getPoint(0),
+                front.getPoint(front.getNumberOfPoints() - 1)) == 0.0) {
+            return 1.0;
+        } else {
+            double dmean = 0.0;
 
-      double dExtrems = 0.0;
-      for (int i = 0 ; i < extremeValues.length; i++) {
-        dExtrems += FrontUtils.distanceToClosestPoint(extremeValues[i], front);
-      }
+            for (int i = 0; i < front.getNumberOfPoints(); i++) {
+                dmean += FrontUtils.distanceToNearestPoint(front.getPoint(i), front);
+            }
 
-      double mean = 0.0;
-      for (int i = 0; i < front.getNumberOfPoints(); i++) {
-        mean += Math.abs(FrontUtils.distanceToNearestPoint(front.getPoint(i), front) -
-            dmean);
-      }
+            dmean = dmean / (numberOfPoints);
 
-      return (dExtrems + mean) / (dExtrems + (numberOfPoints*dmean));      
+            double dExtrems = 0.0;
+            for (int i = 0; i < extremeValues.length; i++) {
+                dExtrems += FrontUtils.distanceToClosestPoint(extremeValues[i], front);
+            }
+
+            double mean = 0.0;
+            for (int i = 0; i < front.getNumberOfPoints(); i++) {
+                mean += Math.abs(FrontUtils.distanceToNearestPoint(front.getPoint(i), front) -
+                        dmean);
+            }
+
+            return (dExtrems + mean) / (dExtrems + (numberOfPoints * dmean));
+        }
     }
-  }
 
 
-  @Override
-  public String getName() {
-    return super.getName();
-  }
+    @Override
+    public String getName() {
+        return super.getName();
+    }
 }

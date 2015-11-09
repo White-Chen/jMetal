@@ -24,40 +24,51 @@ import org.uma.jmetal.util.pseudorandom.JMetalRandom;
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public class SimpleRandomMutation implements MutationOperator<DoubleSolution> {
-  private double mutationProbability ;
-  private JMetalRandom randomGenerator ;
+    private double mutationProbability;
+    private JMetalRandom randomGenerator;
 
-  /**  Constructor */
-  public SimpleRandomMutation(double probability) {
-    if (probability < 0) {
-      throw new JMetalException("Mutation probability is negative: " + mutationProbability) ;
+    /**
+     * Constructor
+     */
+    public SimpleRandomMutation(double probability) {
+        if (probability < 0) {
+            throw new JMetalException("Mutation probability is negative: " + mutationProbability);
+        }
+
+        this.mutationProbability = probability;
+        randomGenerator = JMetalRandom.getInstance();
     }
 
-  	this.mutationProbability = probability ;
-    randomGenerator = JMetalRandom.getInstance() ;
-  }
-	
-	/** Execute() method */
-	@Override
-  public DoubleSolution execute(DoubleSolution solution) throws JMetalException {
-    if (null == solution) {
-      throw new JMetalException("Null parameter") ;
+    /**
+     * Execute() method
+     */
+    @Override
+    public DoubleSolution execute(DoubleSolution solution) throws JMetalException {
+        if (null == solution) {
+            throw new JMetalException("Null parameter");
+        }
+
+        doMutation(mutationProbability, solution);
+
+        return solution;
     }
 
-    doMutation(mutationProbability, solution) ;
-    
-    return solution;
-  }
+    /**
+     * Implements the mutation operation
+     */
+    private void doMutation(double probability, DoubleSolution solution) {
+        for (int i = 0; i < solution.getNumberOfVariables(); i++) {
+            if (randomGenerator.nextDouble() <= probability) {
+                Double value = solution.getLowerBound(i) +
+                        ((solution.getUpperBound(i) - solution.getLowerBound(i)) * randomGenerator.nextDouble());
 
-  /** Implements the mutation operation */
-	private void doMutation(double probability, DoubleSolution solution) {
-    for (int i = 0; i < solution.getNumberOfVariables(); i++) {
-      if (randomGenerator.nextDouble() <= probability) {
-      	Double value = solution.getLowerBound(i) +
-      			((solution.getUpperBound(i) - solution.getLowerBound(i)) * randomGenerator.nextDouble()) ;
-      	
-      	solution.setVariableValue(i, value) ;
-      }
+                solution.setVariableValue(i, value);
+            }
+        }
     }
-	}
+
+    @Override
+    public void setMutationProbability(Double mutationProbability) {
+
+    }
 }

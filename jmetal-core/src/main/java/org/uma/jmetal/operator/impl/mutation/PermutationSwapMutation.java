@@ -26,54 +26,61 @@ import org.uma.jmetal.util.pseudorandom.JMetalRandom;
  * @author Juan J. Durillo
  */
 public class PermutationSwapMutation<T> implements MutationOperator<PermutationSolution<T>> {
-  private double mutationProbability ;
-  private JMetalRandom randomGenerator ;
+    private double mutationProbability;
+    private JMetalRandom randomGenerator;
 
-  /**
-   * Constructor
-   */
-  public PermutationSwapMutation(double mutationProbability) {
-    if ((mutationProbability < 0) || (mutationProbability > 1)) {
-      throw new JMetalException("Mutation probability value invalid: " + mutationProbability) ;
-    }
-    this.mutationProbability = mutationProbability;
-    randomGenerator = JMetalRandom.getInstance() ;
-  }
-
-  /** Execute() method */
-  @Override
-  public PermutationSolution<T> execute(PermutationSolution<T> solution) {
-    if (null == solution) {
-      throw new JMetalException("Null parameter") ;
+    /**
+     * Constructor
+     */
+    public PermutationSwapMutation(double mutationProbability) {
+        if ((mutationProbability < 0) || (mutationProbability > 1)) {
+            throw new JMetalException("Mutation probability value invalid: " + mutationProbability);
+        }
+        this.mutationProbability = mutationProbability;
+        randomGenerator = JMetalRandom.getInstance();
     }
 
-    doMutation(solution);
-    return solution;
-  }
-
-  /**
-   * Performs the operation
-   */
-  public void doMutation(PermutationSolution<T> solution) {
-    int permutationLength ;
-    permutationLength = solution.getNumberOfVariables() ;
-
-    if ((permutationLength != 0) && (permutationLength != 1)) {
-      if (randomGenerator.nextDouble() < mutationProbability) {
-        int pos1 = randomGenerator.nextInt(0, permutationLength - 1);
-        int pos2 = randomGenerator.nextInt(0, permutationLength - 1);
-
-        while (pos1 == pos2) {
-          if (pos1 == (permutationLength - 1))
-            pos2 = randomGenerator.nextInt(0, permutationLength - 2);
-          else
-            pos2 = randomGenerator.nextInt(pos1, permutationLength - 1);
+    /**
+     * Execute() method
+     */
+    @Override
+    public PermutationSolution<T> execute(PermutationSolution<T> solution) {
+        if (null == solution) {
+            throw new JMetalException("Null parameter");
         }
 
-        T temp = solution.getVariableValue(pos1);
-        solution.setVariableValue(pos1, solution.getVariableValue(pos2));
-        solution.setVariableValue(pos2, temp);
-      }
+        doMutation(solution);
+        return solution;
     }
-  }
+
+    /**
+     * Performs the operation
+     */
+    public void doMutation(PermutationSolution<T> solution) {
+        int permutationLength;
+        permutationLength = solution.getNumberOfVariables();
+
+        if ((permutationLength != 0) && (permutationLength != 1)) {
+            if (randomGenerator.nextDouble() < mutationProbability) {
+                int pos1 = randomGenerator.nextInt(0, permutationLength - 1);
+                int pos2 = randomGenerator.nextInt(0, permutationLength - 1);
+
+                while (pos1 == pos2) {
+                    if (pos1 == (permutationLength - 1))
+                        pos2 = randomGenerator.nextInt(0, permutationLength - 2);
+                    else
+                        pos2 = randomGenerator.nextInt(pos1, permutationLength - 1);
+                }
+
+                T temp = solution.getVariableValue(pos1);
+                solution.setVariableValue(pos1, solution.getVariableValue(pos2));
+                solution.setVariableValue(pos2, temp);
+            }
+        }
+    }
+
+    @Override
+    public void setMutationProbability(Double mutationProbability) {
+        this.mutationProbability = mutationProbability;
+    }
 }

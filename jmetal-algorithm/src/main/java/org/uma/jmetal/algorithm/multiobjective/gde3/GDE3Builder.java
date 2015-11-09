@@ -37,76 +37,76 @@ import java.util.List;
  * This class implements the GDE3 algorithm
  */
 public class GDE3Builder implements AlgorithmBuilder<GDE3> {
-  private DoubleProblem problem;
-  protected int populationSize;
-  protected int maxIterations;
+    protected int populationSize;
+    protected int maxIterations;
+    protected DifferentialEvolutionCrossover crossoverOperator;
+    protected DifferentialEvolutionSelection selectionOperator;
+    protected SolutionListEvaluator<DoubleSolution> evaluator;
+    private DoubleProblem problem;
 
-  protected DifferentialEvolutionCrossover crossoverOperator;
-  protected DifferentialEvolutionSelection selectionOperator;
+    /**
+     * Constructor
+     */
+    public GDE3Builder(DoubleProblem problem) {
+        this.problem = problem;
+        maxIterations = 250;
+        populationSize = 100;
+        selectionOperator = new DifferentialEvolutionSelection();
+        crossoverOperator = new DifferentialEvolutionCrossover();
+        evaluator = new SequentialSolutionListEvaluator<DoubleSolution>();
+    }
 
-  protected SolutionListEvaluator<DoubleSolution> evaluator;
+    public GDE3Builder setCrossover(DifferentialEvolutionCrossover crossover) {
+        crossoverOperator = crossover;
 
-  /** Constructor */
-  public GDE3Builder(DoubleProblem problem) {
-    this.problem = problem;
-    maxIterations = 250 ;
-    populationSize = 100 ;
-    selectionOperator = new DifferentialEvolutionSelection();
-    crossoverOperator = new DifferentialEvolutionCrossover() ;
-    evaluator = new SequentialSolutionListEvaluator<DoubleSolution>() ;
-  }
+        return this;
+    }
 
-  /* Setters */
-  public GDE3Builder setPopulationSize(int populationSize) {
-    this.populationSize = populationSize;
+    public GDE3Builder setSelection(DifferentialEvolutionSelection selection) {
+        selectionOperator = selection;
 
-    return this;
-  }
+        return this;
+    }
 
-  public GDE3Builder setMaxIterations(int maxIterations) {
-    this.maxIterations = maxIterations;
+    public GDE3Builder setSolutionSetEvaluator(SolutionListEvaluator<DoubleSolution> evaluator) {
+        this.evaluator = evaluator;
 
-    return this;
-  }
+        return this;
+    }
 
-  public GDE3Builder setCrossover(DifferentialEvolutionCrossover crossover) {
-    crossoverOperator = crossover;
+    public GDE3 build() {
+        return new GDE3(problem, populationSize, maxIterations, selectionOperator, crossoverOperator, evaluator);
+    }
 
-    return this;
-  }
+    /* Getters */
+    public CrossoverOperator<DoubleSolution> getCrossoverOperator() {
+        return crossoverOperator;
+    }
 
-  public GDE3Builder setSelection(DifferentialEvolutionSelection selection) {
-    selectionOperator = selection;
+    public SelectionOperator<List<DoubleSolution>, List<DoubleSolution>> getSelectionOperator() {
+        return selectionOperator;
+    }
 
-    return this;
-  }
+    public int getPopulationSize() {
+        return populationSize;
+    }
 
-  public GDE3Builder setSolutionSetEvaluator(SolutionListEvaluator<DoubleSolution> evaluator) {
-    this.evaluator = evaluator ;
+    /* Setters */
+    public GDE3Builder setPopulationSize(int populationSize) {
+        this.populationSize = populationSize;
 
-    return this ;
-  }
+        return this;
+    }
 
-  public GDE3 build() {
-    return new GDE3(problem, populationSize, maxIterations, selectionOperator, crossoverOperator, evaluator) ;
-  }
+    public int getMaxIterations() {
+        return maxIterations;
+    }
 
-  /* Getters */
-  public CrossoverOperator<DoubleSolution> getCrossoverOperator() {
-    return crossoverOperator;
-  }
+    public GDE3Builder setMaxIterations(int maxIterations) {
+        this.maxIterations = maxIterations;
 
-  public SelectionOperator<List<DoubleSolution>, List<DoubleSolution>> getSelectionOperator() {
-    return selectionOperator;
-  }
-
-  public int getPopulationSize() {
-    return populationSize;
-  }
-
-  public int getMaxIterations() {
-    return maxIterations;
-  }
+        return this;
+    }
 
 }
 

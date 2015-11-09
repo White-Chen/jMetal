@@ -26,28 +26,28 @@ import java.util.Comparator;
  * Modified by Juanjo on 07/04/2015
  */
 public class CrowdingDistanceArchive<S extends Solution<?>> extends AbstractBoundedArchive<S> {
-  private Comparator<S> crowdingDistanceComparator;
-  private DensityEstimator<S> crowdingDistance ;
-  
+    private Comparator<S> crowdingDistanceComparator;
+    private DensityEstimator<S> crowdingDistance;
 
-  public CrowdingDistanceArchive(int maxSize) {
-    super(maxSize);
-	crowdingDistanceComparator = new CrowdingDistanceComparator<S>() ;
-    crowdingDistance = new CrowdingDistance<S>() ;
-  }
 
-  @Override
-  public void prune() {
-	  
-    if (getSolutionList().size() > getMaxSize()) { 
-	      crowdingDistance.computeDensityEstimator(getSolutionList());
-	      S worst = new SolutionListUtils().findWorstSolution(getSolutionList(), crowdingDistanceComparator) ;
-	      getSolutionList().remove(worst);
+    public CrowdingDistanceArchive(int maxSize) {
+        super(maxSize);
+        crowdingDistanceComparator = new CrowdingDistanceComparator<S>();
+        crowdingDistance = new CrowdingDistance<S>();
     }
-  }
 
-  public void computeDistance() {
-	    crowdingDistance.computeDensityEstimator(getSolutionList());
-	  }
-  
- }
+    @Override
+    public void prune() {
+
+        if (getSolutionList().size() > getMaxSize()) {
+            crowdingDistance.computeDensityEstimator(getSolutionList());
+            S worst = new SolutionListUtils().findWorstSolution(getSolutionList(), crowdingDistanceComparator);
+            getSolutionList().remove(worst);
+        }
+    }
+
+    public void computeDistance() {
+        crowdingDistance.computeDensityEstimator(getSolutionList());
+    }
+
+}

@@ -21,14 +21,13 @@ import java.util.List;
  * Interface representing crossover operators. They will receive a list of solutions and return
  * another list of solutions
  *
- * @author Antonio J. Nebro <antonio@lcc.uma.es>
- *
  * @param <S> The class of the solutions
+ * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
-public interface CrossoverOperator<S extends Solution<?>> extends Operator<List<S>,List<S>> {
+public interface CrossoverOperator<S extends Solution<?>> extends Operator<List<S>, List<S>> {
 
-  /**
-   * @return The number of parents required to apply the operator.
-   */
-  public int getNumberOfParents() ;
+    /**
+     * @return The number of parents required to apply the operator.
+     */
+    public int getNumberOfParents();
 }

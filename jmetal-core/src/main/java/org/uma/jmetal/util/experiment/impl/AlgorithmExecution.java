@@ -32,17 +32,19 @@ import java.io.File;
  * Created by Antonio J. Nebro on 18/07/14.
  */
 public class AlgorithmExecution implements ExperimentComponent {
-  private ExperimentConfiguration<?> configuration ;
+    private ExperimentConfiguration<?> configuration;
 
-  /** Constructor */
-  public AlgorithmExecution(ExperimentConfiguration<?> configuration) {
-    this.configuration = configuration ;
-  }
+    /**
+     * Constructor
+     */
+    public AlgorithmExecution(ExperimentConfiguration<?> configuration) {
+        this.configuration = configuration;
+    }
 
-  @Override
-  public void run() {
-    JMetalLogger.logger.info("ExperimentExecution: Preparing output directory");
-    prepareOutputDirectory() ;
+    @Override
+    public void run() {
+        JMetalLogger.logger.info("ExperimentExecution: Preparing output directory");
+        prepareOutputDirectory();
 
 
 
@@ -62,41 +64,41 @@ public class AlgorithmExecution implements ExperimentComponent {
     parallelExecutor.parallelExecution();
     parallelExecutor.stop();
     */
-  }
-
-  private void prepareOutputDirectory() {
-    if (experimentDirectoryDoesNotExist()) {
-      createExperimentDirectory() ;
-    }
-  }
-
-  private boolean experimentDirectoryDoesNotExist() {
-    boolean result;
-    File experimentDirectory;
-
-    experimentDirectory = new File(configuration.getExperimentBaseDirectory());
-    if (experimentDirectory.exists() && experimentDirectory.isDirectory()) {
-      result = false;
-    } else {
-      result = true;
     }
 
-    return result;
-  }
-
-  private void createExperimentDirectory() {
-    File experimentDirectory;
-    experimentDirectory = new File(configuration.getExperimentBaseDirectory());
-
-    if (experimentDirectory.exists()) {
-      experimentDirectory.delete() ;
+    private void prepareOutputDirectory() {
+        if (experimentDirectoryDoesNotExist()) {
+            createExperimentDirectory();
+        }
     }
 
-    boolean result ;
-    result = new File(configuration.getExperimentBaseDirectory()).mkdirs() ;
-    if (!result) {
-      throw new JMetalException("Error creating experiment directory: " +
-        configuration.getExperimentBaseDirectory()) ;
+    private boolean experimentDirectoryDoesNotExist() {
+        boolean result;
+        File experimentDirectory;
+
+        experimentDirectory = new File(configuration.getExperimentBaseDirectory());
+        if (experimentDirectory.exists() && experimentDirectory.isDirectory()) {
+            result = false;
+        } else {
+            result = true;
+        }
+
+        return result;
     }
-  }
+
+    private void createExperimentDirectory() {
+        File experimentDirectory;
+        experimentDirectory = new File(configuration.getExperimentBaseDirectory());
+
+        if (experimentDirectory.exists()) {
+            experimentDirectory.delete();
+        }
+
+        boolean result;
+        result = new File(configuration.getExperimentBaseDirectory()).mkdirs();
+        if (!result) {
+            throw new JMetalException("Error creating experiment directory: " +
+                    configuration.getExperimentBaseDirectory());
+        }
+    }
 }

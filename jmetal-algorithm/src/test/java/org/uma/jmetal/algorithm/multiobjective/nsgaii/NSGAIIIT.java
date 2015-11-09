@@ -15,33 +15,33 @@ import java.util.List;
 import static org.junit.Assert.assertTrue;
 
 public class NSGAIIIT {
-  Algorithm<List<DoubleSolution>> algorithm;
+    Algorithm<List<DoubleSolution>> algorithm;
 
-  @Test
-  public void shouldTheAlgorithmReturnANumberOfSolutionsWhenSolvingASimpleProblem() throws Exception {
-    Kursawe problem = new Kursawe() ;
-    CrossoverOperator<DoubleSolution> crossover;
-    MutationOperator<DoubleSolution> mutation;
+    @Test
+    public void shouldTheAlgorithmReturnANumberOfSolutionsWhenSolvingASimpleProblem() throws Exception {
+        Kursawe problem = new Kursawe();
+        CrossoverOperator<DoubleSolution> crossover;
+        MutationOperator<DoubleSolution> mutation;
 
-    double crossoverProbability = 0.9 ;
-    double crossoverDistributionIndex = 20.0 ;
-    crossover = new SBXCrossover(crossoverProbability, crossoverDistributionIndex) ;
+        double crossoverProbability = 0.9;
+        double crossoverDistributionIndex = 20.0;
+        crossover = new SBXCrossover(crossoverProbability, crossoverDistributionIndex);
 
-    double mutationProbability = 1.0 / problem.getNumberOfVariables() ;
-    double mutationDistributionIndex = 20.0 ;
-    mutation = new PolynomialMutation(mutationProbability, mutationDistributionIndex) ;
+        double mutationProbability = 1.0 / problem.getNumberOfVariables();
+        double mutationDistributionIndex = 20.0;
+        mutation = new PolynomialMutation(mutationProbability, mutationDistributionIndex);
 
-    algorithm = new NSGAIIBuilder<DoubleSolution>(problem, crossover, mutation).build() ;
+        algorithm = new NSGAIIBuilder<DoubleSolution>(problem, crossover, mutation).build();
 
-    AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
-        .execute() ;
+        AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
+                .execute();
 
-    List<DoubleSolution> population = algorithm.getResult() ;
+        List<DoubleSolution> population = algorithm.getResult();
 
     /*
     Rationale: the default problem is Kursawe, and usually NSGA-II, configured with standard
     settings, should return 100 solutions
     */
-    assertTrue(population.size() >= 98) ;
-  }
+        assertTrue(population.size() >= 98);
+    }
 }

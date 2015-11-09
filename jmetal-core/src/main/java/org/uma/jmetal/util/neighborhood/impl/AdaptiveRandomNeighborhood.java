@@ -29,89 +29,90 @@ import java.util.List;
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public class AdaptiveRandomNeighborhood<S extends Solution<?>> implements Neighborhood<S> {
-  private int solutionListSize ;
-  private int numberOfRandomNeighbours;
-  private List<List<Integer>> neighbours;
-  private JMetalRandom randomGenerator ;
+    private int solutionListSize;
+    private int numberOfRandomNeighbours;
+    private List<List<Integer>> neighbours;
+    private JMetalRandom randomGenerator;
 
-  /**
-   * Constructor
-   * @param solutionListSize The expected size of the list of solutions
-   * @param numberOfRandomNeighbours The number of neighbors per solution
-   */
-  public AdaptiveRandomNeighborhood(int solutionListSize, int numberOfRandomNeighbours) {
-    if (numberOfRandomNeighbours < 0) {
-      throw new JMetalException("The number of neighbors is negative: " + numberOfRandomNeighbours) ;
-    } else if (solutionListSize <= numberOfRandomNeighbours) {
-      throw new JMetalException("The population size: " + solutionListSize + " is " +
-              "less or equal to the number of requested neighbors: "+ numberOfRandomNeighbours) ;
+    /**
+     * Constructor
+     *
+     * @param solutionListSize         The expected size of the list of solutions
+     * @param numberOfRandomNeighbours The number of neighbors per solution
+     */
+    public AdaptiveRandomNeighborhood(int solutionListSize, int numberOfRandomNeighbours) {
+        if (numberOfRandomNeighbours < 0) {
+            throw new JMetalException("The number of neighbors is negative: " + numberOfRandomNeighbours);
+        } else if (solutionListSize <= numberOfRandomNeighbours) {
+            throw new JMetalException("The population size: " + solutionListSize + " is " +
+                    "less or equal to the number of requested neighbors: " + numberOfRandomNeighbours);
+        }
+
+        this.solutionListSize = solutionListSize;
+        this.numberOfRandomNeighbours = numberOfRandomNeighbours;
+        this.randomGenerator = JMetalRandom.getInstance();
+
+        createNeighborhoods();
+        addRandomNeighbors();
     }
 
-    this.solutionListSize = solutionListSize ;
-    this.numberOfRandomNeighbours = numberOfRandomNeighbours ;
-    this.randomGenerator = JMetalRandom.getInstance() ;
+    /**
+     * Initialize all the neighborhoods, adding the current solution to them.
+     */
+    private void createNeighborhoods() {
+        neighbours = new ArrayList<List<Integer>>(solutionListSize);
 
-    createNeighborhoods();
-    addRandomNeighbors() ;
-  }
-
-  /**
-   * Initialize all the neighborhoods, adding the current solution to them.
-   */
-  private void createNeighborhoods() {
-    neighbours = new ArrayList<List<Integer>>(solutionListSize);
-
-    for (int i = 0; i < solutionListSize; i++) {
-      neighbours.add(new ArrayList<Integer>());
-      neighbours.get(i).add(i);
-    }
-  }
-
-  /**
-   * Add random neighbors to all the neighborhoods
-   */
-  private void addRandomNeighbors() {
-    for (int i = 0; i < solutionListSize; i++) {
-      while(neighbours.get(i).size() <= numberOfRandomNeighbours) {
-        int random = randomGenerator.nextInt(0, solutionListSize - 1);
-        neighbours.get(i).add(random) ;
-      }
-    }
-  }
-
-  private List<S> getIthNeighborhood(List<S> solutionList, int index) {
-    List<S> neighborhood = new ArrayList<>() ;
-    for (int i = 0 ; i < (numberOfRandomNeighbours + 1); i++) {
-      int neighboursIndex = neighbours.get(index).get(i) ;
-      neighborhood.add(solutionList.get(neighboursIndex));
+        for (int i = 0; i < solutionListSize; i++) {
+            neighbours.add(new ArrayList<Integer>());
+            neighbours.get(i).add(i);
+        }
     }
 
-    return neighborhood ;
-  }
-
-  /**
-   * Recomputes the neighbors
-   */
-  public void recompute() {
-    createNeighborhoods();
-    addRandomNeighbors();
-  }
-
-  @Override
-  public List<S> getNeighbors(List<S> solutionList, int solutionIndex) {
-    if (solutionList == null) {
-      throw new JMetalException("The solution list is null") ;
-    } else if (solutionList.size() != solutionListSize) {
-      throw new JMetalException("The solution list size: " + solutionList.size() + " is" +
-              " different to the value: " + solutionListSize) ;
-    } else if (solutionIndex < 0) {
-      throw new JMetalException("The solution position value is negative: " + solutionIndex);
-    } else if (solutionIndex >= solutionList.size()) {
-      throw new JMetalException("The solution position value: " + solutionIndex +
-              " is equal or greater than the solution list size: "
-              + solutionList.size()) ;
+    /**
+     * Add random neighbors to all the neighborhoods
+     */
+    private void addRandomNeighbors() {
+        for (int i = 0; i < solutionListSize; i++) {
+            while (neighbours.get(i).size() <= numberOfRandomNeighbours) {
+                int random = randomGenerator.nextInt(0, solutionListSize - 1);
+                neighbours.get(i).add(random);
+            }
+        }
     }
 
-    return getIthNeighborhood(solutionList, solutionIndex);
-  }
+    private List<S> getIthNeighborhood(List<S> solutionList, int index) {
+        List<S> neighborhood = new ArrayList<>();
+        for (int i = 0; i < (numberOfRandomNeighbours + 1); i++) {
+            int neighboursIndex = neighbours.get(index).get(i);
+            neighborhood.add(solutionList.get(neighboursIndex));
+        }
+
+        return neighborhood;
+    }
+
+    /**
+     * Recomputes the neighbors
+     */
+    public void recompute() {
+        createNeighborhoods();
+        addRandomNeighbors();
+    }
+
+    @Override
+    public List<S> getNeighbors(List<S> solutionList, int solutionIndex) {
+        if (solutionList == null) {
+            throw new JMetalException("The solution list is null");
+        } else if (solutionList.size() != solutionListSize) {
+            throw new JMetalException("The solution list size: " + solutionList.size() + " is" +
+                    " different to the value: " + solutionListSize);
+        } else if (solutionIndex < 0) {
+            throw new JMetalException("The solution position value is negative: " + solutionIndex);
+        } else if (solutionIndex >= solutionList.size()) {
+            throw new JMetalException("The solution position value: " + solutionIndex +
+                    " is equal or greater than the solution list size: "
+                    + solutionList.size());
+        }
+
+        return getIthNeighborhood(solutionList, solutionIndex);
+    }
 }

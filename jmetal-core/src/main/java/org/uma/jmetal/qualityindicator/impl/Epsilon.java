@@ -45,99 +45,101 @@ import java.util.List;
  */
 
 public class Epsilon<Evaluate extends List<? extends Solution<?>>>
-    extends SimpleDescribedEntity
-    implements QualityIndicator<Evaluate,Double> {
+        extends SimpleDescribedEntity
+        implements QualityIndicator<Evaluate, Double> {
 
-  private Front referenceParetoFront ;
+    private Front referenceParetoFront;
 
-  /**
-   * Constructor
-   *
-   * @param referenceParetoFrontFile
-   * @throws FileNotFoundException
-   */
-  public Epsilon(String referenceParetoFrontFile) throws FileNotFoundException {
-    super("EP", "Epsilon quality indicator") ;
-    if (referenceParetoFrontFile == null) {
-      throw new JMetalException("The reference pareto front is null");
-    }
-
-    Front front = new ArrayFront(referenceParetoFrontFile);
-    referenceParetoFront = front ;
-  }
-
-  /**
-   * Constructor
-   *
-   * @param referenceParetoFront
-   */
-  public Epsilon(Front referenceParetoFront) {
-    super("EP", "Epsilon quality indicator") ;
-    if (referenceParetoFront == null) {
-      throw new JMetalException("The reference pareto front is null");
-    }
-
-    this.referenceParetoFront = referenceParetoFront ;
-  }
-
-  /**
-   * Evaluate() method
-   *
-   * @param solutionList
-   * @return
-   */
-  @Override public Double evaluate(Evaluate solutionList) {
-    if (solutionList == null) {
-      throw new JMetalException("The pareto front approximation list is null") ;
-    }
-
-    return epsilon(new ArrayFront(solutionList), referenceParetoFront);
-  }
-
-  @Override public String getName() {
-    return super.getName() ;
-  }
-
-  /**
-   * Returns the value of the epsilon indicator.
-   *
-   * @param front Solution front
-   * @param referenceFront Optimal Pareto front
-   * @return the value of the epsilon indicator
-   * @throws JMetalException
-   */
-  private double epsilon(Front front, Front referenceFront) throws JMetalException {
-
-    double eps, epsJ = 0.0, epsK = 0.0, epsTemp;
-
-    int numberOfObjectives = front.getPointDimensions() ;
-
-    eps = Double.MIN_VALUE;
-
-
-    for (int i = 0; i < referenceFront.getNumberOfPoints(); i++) {
-      for (int j = 0; j < front.getNumberOfPoints(); j++) {
-        for (int k = 0; k < numberOfObjectives; k++) {
-          epsTemp = front.getPoint(j).getDimensionValue(k)
-              - referenceFront.getPoint(i).getDimensionValue(k);
-          if (k == 0) {
-            epsK = epsTemp;
-          } else if (epsK < epsTemp) {
-            epsK = epsTemp;
-          }
+    /**
+     * Constructor
+     *
+     * @param referenceParetoFrontFile
+     * @throws FileNotFoundException
+     */
+    public Epsilon(String referenceParetoFrontFile) throws FileNotFoundException {
+        super("EP", "Epsilon quality indicator");
+        if (referenceParetoFrontFile == null) {
+            throw new JMetalException("The reference pareto front is null");
         }
-        if (j == 0) {
-          epsJ = epsK;
-        } else if (epsJ > epsK) {
-          epsJ = epsK;
-        }
-      }
-      if (i == 0) {
-        eps = epsJ;
-      } else if (eps < epsJ) {
-        eps = epsJ;
-      }
+
+        Front front = new ArrayFront(referenceParetoFrontFile);
+        referenceParetoFront = front;
     }
-    return eps;
-  }
+
+    /**
+     * Constructor
+     *
+     * @param referenceParetoFront
+     */
+    public Epsilon(Front referenceParetoFront) {
+        super("EP", "Epsilon quality indicator");
+        if (referenceParetoFront == null) {
+            throw new JMetalException("The reference pareto front is null");
+        }
+
+        this.referenceParetoFront = referenceParetoFront;
+    }
+
+    /**
+     * Evaluate() method
+     *
+     * @param solutionList
+     * @return
+     */
+    @Override
+    public Double evaluate(Evaluate solutionList) {
+        if (solutionList == null) {
+            throw new JMetalException("The pareto front approximation list is null");
+        }
+
+        return epsilon(new ArrayFront(solutionList), referenceParetoFront);
+    }
+
+    @Override
+    public String getName() {
+        return super.getName();
+    }
+
+    /**
+     * Returns the value of the epsilon indicator.
+     *
+     * @param front          Solution front
+     * @param referenceFront Optimal Pareto front
+     * @return the value of the epsilon indicator
+     * @throws JMetalException
+     */
+    private double epsilon(Front front, Front referenceFront) throws JMetalException {
+
+        double eps, epsJ = 0.0, epsK = 0.0, epsTemp;
+
+        int numberOfObjectives = front.getPointDimensions();
+
+        eps = Double.MIN_VALUE;
+
+
+        for (int i = 0; i < referenceFront.getNumberOfPoints(); i++) {
+            for (int j = 0; j < front.getNumberOfPoints(); j++) {
+                for (int k = 0; k < numberOfObjectives; k++) {
+                    epsTemp = front.getPoint(j).getDimensionValue(k)
+                            - referenceFront.getPoint(i).getDimensionValue(k);
+                    if (k == 0) {
+                        epsK = epsTemp;
+                    } else if (epsK < epsTemp) {
+                        epsK = epsTemp;
+                    }
+                }
+                if (j == 0) {
+                    epsJ = epsK;
+                } else if (epsJ > epsK) {
+                    epsJ = epsK;
+                }
+            }
+            if (i == 0) {
+                eps = epsJ;
+            } else if (eps < epsJ) {
+                eps = epsJ;
+            }
+        }
+        return eps;
+    }
 }

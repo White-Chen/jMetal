@@ -38,226 +38,248 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-/** Class implementing the OMOPSO algorithm */
+/**
+ * Class implementing the OMOPSO algorithm
+ */
 public class OMOPSO extends AbstractParticleSwarmOptimization<DoubleSolution, List<DoubleSolution>> {
 
-  private DoubleProblem problem;
+    SolutionListEvaluator<DoubleSolution> evaluator;
+    private DoubleProblem problem;
+    private int swarmSize;
+    private int archiveSize;
+    private int maxIterations;
+    private int currentIteration;
+    private int maxEvaluations;
+    private int evaluations;
 
-  SolutionListEvaluator<DoubleSolution> evaluator;
+    private List<DoubleSolution> swarm;
+    private DoubleSolution[] localBest;
+    private CrowdingDistanceArchive<DoubleSolution> leaderArchive;
+    private NonDominatedSolutionListArchive<DoubleSolution> epsilonArchive;
 
-  private int swarmSize;
-  private int archiveSize;
-  private int maxIterations;
-  private int currentIteration;
+    private double[][] speed;
 
-  private List<DoubleSolution> swarm;
-  private DoubleSolution[] localBest;
-  private CrowdingDistanceArchive<DoubleSolution> leaderArchive;
-  private NonDominatedSolutionListArchive<DoubleSolution> epsilonArchive;
+    private Comparator<DoubleSolution> dominanceComparator;
+    private Comparator<DoubleSolution> crowdingDistanceComparator;
 
-  private double[][] speed;
+    private UniformMutation uniformMutation;
+    private NonUniformMutation nonUniformMutation;
 
-  private Comparator<DoubleSolution> dominanceComparator;
-  private Comparator<DoubleSolution> crowdingDistanceComparator;
+    private double eta = 0.0075;
 
-  private UniformMutation uniformMutation;
-  private NonUniformMutation nonUniformMutation;
+    private JMetalRandom randomGenerator;
+    private CrowdingDistance<DoubleSolution> crowdingDistance;
 
-  private double eta = 0.0075;
+    /**
+     * Constructor
+     */
+    public OMOPSO(DoubleProblem problem, SolutionListEvaluator<DoubleSolution> evaluator,
+                  int swarmSize, int maxIterations, int archiveSize, UniformMutation uniformMutation,
+                  NonUniformMutation nonUniformMutation, int maxEvaluations) {
+        this.problem = problem;
+        this.evaluator = evaluator;
 
-  private JMetalRandom randomGenerator;
-  private CrowdingDistance<DoubleSolution> crowdingDistance;
+        this.swarmSize = swarmSize;
+        this.maxIterations = maxIterations;
+        this.archiveSize = archiveSize;
+        this.maxEvaluations = maxEvaluations;
 
-  /** Constructor */
-  public OMOPSO(DoubleProblem problem, SolutionListEvaluator<DoubleSolution> evaluator,
-      int swarmSize, int maxIterations, int archiveSize, UniformMutation uniformMutation,
-      NonUniformMutation nonUniformMutation) {
-    this.problem = problem ;
-    this.evaluator = evaluator ;
+        this.uniformMutation = uniformMutation;
+        this.nonUniformMutation = nonUniformMutation;
 
-    this.swarmSize = swarmSize ;
-    this.maxIterations = maxIterations ;
-    this.archiveSize = archiveSize ;
+        localBest = new DoubleSolution[swarmSize];
+        leaderArchive = new CrowdingDistanceArchive<DoubleSolution>(this.archiveSize);
+        epsilonArchive = new NonDominatedSolutionListArchive<DoubleSolution>(new DominanceComparator<DoubleSolution>(eta));
 
-    this.uniformMutation = uniformMutation ;
-    this.nonUniformMutation = nonUniformMutation ;
+        dominanceComparator = new DominanceComparator<DoubleSolution>();
+        crowdingDistanceComparator = new CrowdingDistanceComparator<DoubleSolution>();
 
-    localBest = new DoubleSolution[swarmSize];
-    leaderArchive = new CrowdingDistanceArchive<DoubleSolution>(this.archiveSize);
-    epsilonArchive = new NonDominatedSolutionListArchive<DoubleSolution>(new DominanceComparator<DoubleSolution>(eta));
+        speed = new double[swarmSize][problem.getNumberOfVariables()];
 
-    dominanceComparator = new DominanceComparator<DoubleSolution>();
-    crowdingDistanceComparator = new CrowdingDistanceComparator<DoubleSolution>();
-
-    speed = new double[swarmSize][problem.getNumberOfVariables()];
-
-    randomGenerator = JMetalRandom.getInstance() ;
-    crowdingDistance = new CrowdingDistance<DoubleSolution>();
-  }
-
-
-  @Override protected void initProgress() {
-    currentIteration = 1;
-    crowdingDistance.computeDensityEstimator(leaderArchive.getSolutionList());
-  }
-
-  @Override protected void updateProgress() {
-    currentIteration += 1;
-    crowdingDistance.computeDensityEstimator(leaderArchive.getSolutionList());
-  }
-
-  @Override protected boolean isStoppingConditionReached() {
-    return currentIteration >= maxIterations;
-  }
-
-  @Override
-  protected List<DoubleSolution> createInitialSwarm() {
-    List<DoubleSolution> swarm = new ArrayList<>(swarmSize);
-
-    DoubleSolution newSolution;
-    for (int i = 0; i < swarmSize; i++) {
-      newSolution = problem.createSolution();
-      swarm.add(newSolution);
+        randomGenerator = JMetalRandom.getInstance();
+        crowdingDistance = new CrowdingDistance<DoubleSolution>();
     }
 
-    return swarm;
-  }
 
-  @Override
-  protected List<DoubleSolution> evaluateSwarm(List<DoubleSolution> swarm) {
-    swarm = evaluator.evaluate(swarm, problem);
-    return swarm ;
-  }
-
-  @Override public List<DoubleSolution> getResult() {
-    //return this.leaderArchive.getSolutionList();
-      return this.epsilonArchive.getSolutionList();
-  }
-
-  @Override
-  protected void initializeLeaders(List<DoubleSolution> swarm) {
-    for (DoubleSolution solution : swarm) {
-      DoubleSolution particle = (DoubleSolution) solution.copy();
-      if (leaderArchive.add(particle)) {
-        epsilonArchive.add((DoubleSolution) particle.copy());
-      }
+    @Override
+    protected void initProgress() {
+        currentIteration = 1;
+        evaluations = swarmSize;
+        crowdingDistance.computeDensityEstimator(leaderArchive.getSolutionList());
     }
-  }
 
-  @Override
-  protected void initializeParticlesMemory(List<DoubleSolution> swarm)  {
-    for (int i = 0; i < swarm.size(); i++) {
-      DoubleSolution particle = (DoubleSolution) swarm.get(i).copy();
-      localBest[i] = particle;
+    @Override
+    protected void updateProgress() {
+        currentIteration += 1;
+        crowdingDistance.computeDensityEstimator(leaderArchive.getSolutionList());
     }
-  }
 
-  @Override
-  protected void updateVelocity(List<DoubleSolution> swarm)  {
-    double r1, r2, W, C1, C2;
-    DoubleSolution bestGlobal;
-
-    for (int i = 0; i < swarmSize; i++) {
-      DoubleSolution particle = swarm.get(i);
-      DoubleSolution bestParticle = (DoubleSolution) localBest[i];
-
-      //Select a global localBest for calculate the speed of particle i, bestGlobal
-      DoubleSolution one ;
-      DoubleSolution two;
-      int pos1 = randomGenerator.nextInt(0, leaderArchive.getSolutionList().size() - 1);
-      int pos2 = randomGenerator.nextInt(0, leaderArchive.getSolutionList().size() - 1);
-      one = leaderArchive.getSolutionList().get(pos1);
-      two = leaderArchive.getSolutionList().get(pos2);
-
-      if (crowdingDistanceComparator.compare(one, two) < 1) {
-        bestGlobal = one ;
-      } else {
-        bestGlobal = two ;
-      }
-
-      //Parameters for velocity equation
-      r1 = randomGenerator.nextDouble();
-      r2 = randomGenerator.nextDouble();
-      C1 = randomGenerator.nextDouble(1.5, 2.0);
-      C2 = randomGenerator.nextDouble(1.5, 2.0);
-      W = randomGenerator.nextDouble(0.1, 0.5);
-      //
-
-      for (int var = 0; var < particle.getNumberOfVariables(); var++) {
-        //Computing the velocity of this particle
-        speed[i][var] = W * speed[i][var] + C1 * r1 * (bestParticle.getVariableValue(var) -
-            particle.getVariableValue(var)) +
-            C2 * r2 * (bestGlobal.getVariableValue(var) - particle.getVariableValue(var));
-      }
+    @Override
+    protected boolean isStoppingConditionReached() {
+        return currentIteration >= maxIterations || evaluations >= maxEvaluations;
     }
-  }
 
-  /** Update the position of each particle */
-  @Override
-  protected void updatePosition(List<DoubleSolution> swarm)  {
-    for (int i = 0; i < swarmSize; i++) {
-      DoubleSolution particle = swarm.get(i);
-      for (int var = 0; var < particle.getNumberOfVariables(); var++) {
-        particle.setVariableValue(var, particle.getVariableValue(var) + speed[i][var]);
-        if (particle.getVariableValue(var) < problem.getLowerBound(var)) {
-          particle.setVariableValue(var, problem.getLowerBound(var));
-          speed[i][var] = speed[i][var] * -1.0;
+    @Override
+    protected List<DoubleSolution> createInitialSwarm() {
+        List<DoubleSolution> swarm = new ArrayList<>(swarmSize);
+
+        DoubleSolution newSolution;
+        for (int i = 0; i < swarmSize; i++) {
+            newSolution = problem.createSolution();
+            swarm.add(newSolution);
         }
-        if (particle.getVariableValue(var) > problem.getUpperBound(var)) {
-          particle.setVariableValue(var, problem.getUpperBound(var));
-          speed[i][var] = speed[i][var] * -1.0;
+
+        return swarm;
+    }
+
+    @Override
+    protected List<DoubleSolution> evaluateSwarm(List<DoubleSolution> swarm) {
+        swarm = evaluator.evaluate(swarm, problem);
+        return swarm;
+    }
+
+    @Override
+    public List<DoubleSolution> getResult() {
+        //return this.leaderArchive.getSolutionList();
+        return this.epsilonArchive.getSolutionList();
+    }
+
+    @Override
+    protected void initializeLeaders(List<DoubleSolution> swarm) {
+        for (DoubleSolution solution : swarm) {
+            DoubleSolution particle = (DoubleSolution) solution.copy();
+            if (leaderArchive.add(particle)) {
+                epsilonArchive.add((DoubleSolution) particle.copy());
+            }
         }
-      }
     }
-  }
 
-  @Override
-  protected void updateParticlesMemory(List<DoubleSolution> swarm) {
-    for (int i = 0; i < swarm.size(); i++) {
-      int flag = dominanceComparator.compare(swarm.get(i), localBest[i]);
-      if (flag != 1) {
-        DoubleSolution particle = (DoubleSolution) swarm.get(i).copy();
-        localBest[i] = particle;
-      }
+    @Override
+    protected void initializeParticlesMemory(List<DoubleSolution> swarm) {
+        for (int i = 0; i < swarm.size(); i++) {
+            DoubleSolution particle = (DoubleSolution) swarm.get(i).copy();
+            localBest[i] = particle;
+        }
     }
-  }
 
-  @Override protected void initializeVelocity(List<DoubleSolution> swarm) {
-    for (int i = 0; i < swarm.size(); i++) {
-      for (int j = 0; j < problem.getNumberOfVariables(); j++) {
-        speed[i][j] = 0.0;
-      }
+    @Override
+    protected void updateVelocity(List<DoubleSolution> swarm) {
+        double r1, r2, W, C1, C2;
+        DoubleSolution bestGlobal;
+
+        for (int i = 0; i < swarmSize; i++) {
+            DoubleSolution particle = swarm.get(i);
+            DoubleSolution bestParticle = localBest[i];
+
+            //Select a global localBest for calculate the speed of particle i, bestGlobal
+            DoubleSolution one;
+            DoubleSolution two;
+            int pos1 = randomGenerator.nextInt(0, leaderArchive.getSolutionList().size() - 1);
+            int pos2 = randomGenerator.nextInt(0, leaderArchive.getSolutionList().size() - 1);
+            one = leaderArchive.getSolutionList().get(pos1);
+            two = leaderArchive.getSolutionList().get(pos2);
+
+            if (crowdingDistanceComparator.compare(one, two) < 1) {
+                bestGlobal = one;
+            } else {
+                bestGlobal = two;
+            }
+
+            //Parameters for velocity equation
+            r1 = randomGenerator.nextDouble();
+            r2 = randomGenerator.nextDouble();
+            C1 = randomGenerator.nextDouble(1.5, 2.0);
+            C2 = randomGenerator.nextDouble(1.5, 2.0);
+            W = randomGenerator.nextDouble(0.1, 0.5);
+            //
+
+            for (int var = 0; var < particle.getNumberOfVariables(); var++) {
+                //Computing the velocity of this particle
+                speed[i][var] = W * speed[i][var] + C1 * r1 * (bestParticle.getVariableValue(var) -
+                        particle.getVariableValue(var)) +
+                        C2 * r2 * (bestGlobal.getVariableValue(var) - particle.getVariableValue(var));
+            }
+        }
     }
-  }
 
-  /**  Apply a mutation operator to all particles in the swarm (perturbation) */
-  @Override
-  protected void perturbation(List<DoubleSolution> swarm)  {
-    nonUniformMutation.setCurrentIteration(currentIteration);
-
-    for (int i = 0; i < swarm.size(); i++) {
-      if (i % 3 == 0) {
-        nonUniformMutation.execute(swarm.get(i));
-      } else if (i % 3 == 1) {
-        uniformMutation.execute(swarm.get(i));
-      }
+    /**
+     * Update the position of each particle
+     */
+    @Override
+    protected void updatePosition(List<DoubleSolution> swarm) {
+        for (int i = 0; i < swarmSize; i++) {
+            DoubleSolution particle = swarm.get(i);
+            for (int var = 0; var < particle.getNumberOfVariables(); var++) {
+                particle.setVariableValue(var, particle.getVariableValue(var) + speed[i][var]);
+                if (particle.getVariableValue(var) < problem.getLowerBound(var)) {
+                    particle.setVariableValue(var, problem.getLowerBound(var));
+                    speed[i][var] = speed[i][var] * -1.0;
+                }
+                if (particle.getVariableValue(var) > problem.getUpperBound(var)) {
+                    particle.setVariableValue(var, problem.getUpperBound(var));
+                    speed[i][var] = speed[i][var] * -1.0;
+                }
+            }
+        }
     }
-  }
 
-  /**
-   * Update leaders method
-   * @param swarm List of solutions (swarm)
-   */
-  @Override protected void updateLeaders(List<DoubleSolution> swarm) {
-    for (DoubleSolution solution : swarm) {
-      DoubleSolution particle = (DoubleSolution) solution.copy();
-      if (leaderArchive.add(particle)) {
-        epsilonArchive.add((DoubleSolution) particle.copy());
-      }
+    @Override
+    protected void updateParticlesMemory(List<DoubleSolution> swarm) {
+        for (int i = 0; i < swarm.size(); i++) {
+            int flag = dominanceComparator.compare(swarm.get(i), localBest[i]);
+            if (flag != 1) {
+                DoubleSolution particle = (DoubleSolution) swarm.get(i).copy();
+                localBest[i] = particle;
+            }
+        }
     }
-  }
 
-  protected void tearDown() {
-    evaluator.shutdown();
-  }
+    @Override
+    protected void updateEvaluation(List<DoubleSolution> swarm) {
+        this.evaluations += swarm.size();
+    }
+
+    @Override
+    protected void initializeVelocity(List<DoubleSolution> swarm) {
+        for (int i = 0; i < swarm.size(); i++) {
+            for (int j = 0; j < problem.getNumberOfVariables(); j++) {
+                speed[i][j] = 0.0;
+            }
+        }
+    }
+
+    /**
+     * Apply a mutation operator to all particles in the swarm (perturbation)
+     */
+    @Override
+    protected void perturbation(List<DoubleSolution> swarm) {
+        nonUniformMutation.setCurrentIteration(currentIteration);
+
+        for (int i = 0; i < swarm.size(); i++) {
+            if (i % 3 == 0) {
+                nonUniformMutation.execute(swarm.get(i));
+            } else if (i % 3 == 1) {
+                uniformMutation.execute(swarm.get(i));
+            }
+        }
+    }
+
+    /**
+     * Update leaders method
+     *
+     * @param swarm List of solutions (swarm)
+     */
+    @Override
+    protected void updateLeaders(List<DoubleSolution> swarm) {
+        for (DoubleSolution solution : swarm) {
+            DoubleSolution particle = (DoubleSolution) solution.copy();
+            if (leaderArchive.add(particle)) {
+                epsilonArchive.add((DoubleSolution) particle.copy());
+            }
+        }
+    }
+
+    protected void tearDown() {
+        evaluator.shutdown();
+    }
 }

@@ -15,71 +15,72 @@ import java.util.List;
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public abstract class AbstractGeneticAlgorithm<S extends Solution<?>, Result> extends AbstractEvolutionaryAlgorithm<S, Result> {
-  protected SelectionOperator<List<S>, S> selectionOperator ;
-  protected CrossoverOperator<S> crossoverOperator ;
-  protected MutationOperator<S> mutationOperator ;
+    protected SelectionOperator<List<S>, S> selectionOperator;
+    protected CrossoverOperator<S> crossoverOperator;
+    protected MutationOperator<S> mutationOperator;
 
-  /**
-   * This method iteratively applies a {@link SelectionOperator} to the population to fill the mating pool population.
-   *
-   * @param population
-   * @return The mating pool population
-   */
-  @Override
-  protected List<S> selection(List<S> population) {
-    List<S> matingPopulation = new ArrayList<>(population.size());
-    for (int i = 0; i < getMaxPopulationSize(); i++) {
-      S solution = selectionOperator.execute(population);
-      matingPopulation.add(solution);
+    /**
+     * This method iteratively applies a {@link SelectionOperator} to the population to fill the mating pool population.
+     *
+     * @param population
+     * @return The mating pool population
+     */
+    @Override
+    protected List<S> selection(List<S> population) {
+        List<S> matingPopulation = new ArrayList<>(population.size());
+        for (int i = 0; i < getMaxPopulationSize(); i++) {
+            S solution = selectionOperator.execute(population);
+            matingPopulation.add(solution);
+        }
+
+        return matingPopulation;
     }
 
-    return matingPopulation;
-  }
+    /**
+     * This methods iteratively applies a {@link CrossoverOperator} a  {@link MutationOperator} to the population to
+     * create the offspring population. The population size must be divisible by the number of parents required
+     * by the {@link CrossoverOperator}; this way, the needed parents are taken sequentially from the population.
+     * <p/>
+     * No limits are imposed to the number of solutions returned by the {@link CrossoverOperator}.
+     *
+     * @param population
+     * @return The new created offspring population
+     */
+    @Override
+    protected List<S> reproduction(List<S> population) {
+        int numberOfParents = crossoverOperator.getNumberOfParents();
 
-  /**
-   * This methods iteratively applies a {@link CrossoverOperator} a  {@link MutationOperator} to the population to
-   * create the offspring population. The population size must be divisible by the number of parents required
-   * by the {@link CrossoverOperator}; this way, the needed parents are taken sequentially from the population.
-   *
-   * No limits are imposed to the number of solutions returned by the {@link CrossoverOperator}.
-   *
-   * @param population
-   * @return The new created offspring population
-   */
-  @Override
-  protected List<S> reproduction(List<S> population) {
-    int numberOfParents = crossoverOperator.getNumberOfParents() ;
+        checkNumberOfParents(population, numberOfParents);
 
-    checkNumberOfParents(population, numberOfParents);
+        List<S> offspringPopulation = new ArrayList<>(getMaxPopulationSize());
+        for (int i = 0; i < getMaxPopulationSize(); i += numberOfParents) {
+            List<S> parents = new ArrayList<>(numberOfParents);
+            for (int j = 0; j < numberOfParents; j++) {
+                parents.add(population.get(i + j));
+            }
 
-    List<S> offspringPopulation = new ArrayList<>(getMaxPopulationSize());
-    for (int i = 0; i < getMaxPopulationSize(); i += numberOfParents) {
-      List<S> parents = new ArrayList<>(numberOfParents);
-      for (int j = 0; j < numberOfParents; j++) {
-        parents.add(population.get(i+j));
-      }
+            List<S> offspring = crossoverOperator.execute(parents);
 
-      List<S> offspring = crossoverOperator.execute(parents);
-
-      for(S s: offspring){
-        mutationOperator.execute(s);
-        offspringPopulation.add(s);
-      }
+            for (S s : offspring) {
+                mutationOperator.execute(s);
+                offspringPopulation.add(s);
+            }
+        }
+        return offspringPopulation;
     }
-    return offspringPopulation;
-  }
 
-  /**
-   * A crossover operator is applied to a number of parents, and it assumed that the population contains
-   * a valid number of solutions. This method checks that.
-   * @param population
-   * @param numberOfParentsForCrossover
-   */
-  protected void checkNumberOfParents(List<S> population, int numberOfParentsForCrossover) {
-    if ((population.size() % numberOfParentsForCrossover) != 0) {
-      throw new JMetalException("Wrong number of parents: the remainder if the " +
-              "population size (" + population.size() + ") is not divisible by " +
-              numberOfParentsForCrossover) ;
+    /**
+     * A crossover operator is applied to a number of parents, and it assumed that the population contains
+     * a valid number of solutions. This method checks that.
+     *
+     * @param population
+     * @param numberOfParentsForCrossover
+     */
+    protected void checkNumberOfParents(List<S> population, int numberOfParentsForCrossover) {
+        if ((population.size() % numberOfParentsForCrossover) != 0) {
+            throw new JMetalException("Wrong number of parents: the remainder if the " +
+                    "population size (" + population.size() + ") is not divisible by " +
+                    numberOfParentsForCrossover);
+        }
     }
-  }
 }

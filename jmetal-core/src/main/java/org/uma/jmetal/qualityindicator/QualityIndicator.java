@@ -16,12 +16,12 @@ package org.uma.jmetal.qualityindicator;
 import org.uma.jmetal.util.naming.DescribedEntity;
 
 /**
- * @author Antonio J. Nebro <antonio@lcc.uma.es>
-
  * @param <Evaluate> Entity to evaluate
- * @param <Result> Result of the evaluation
+ * @param <Result>   Result of the evaluation
+ * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public interface QualityIndicator<Evaluate, Result> extends DescribedEntity {
-  public Result evaluate(Evaluate evaluate) ;
-  public String getName() ;
+    public Result evaluate(Evaluate evaluate);
+
+    public String getName();
 }

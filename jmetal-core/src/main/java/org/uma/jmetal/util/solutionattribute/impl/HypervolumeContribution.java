@@ -23,14 +23,15 @@ import java.util.List;
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public class HypervolumeContribution<S extends Solution<?>>
-    extends GenericSolutionAttribute<S, Double> implements DensityEstimator<S> {
-  private FastHypervolume fastHV ;
+        extends GenericSolutionAttribute<S, Double> implements DensityEstimator<S> {
+    private FastHypervolume fastHV;
 
-  public HypervolumeContribution() {
-    fastHV = new FastHypervolume();
-  }
+    public HypervolumeContribution() {
+        fastHV = new FastHypervolume();
+    }
 
-  @Override public void computeDensityEstimator(List<S> solutionList) {
-    fastHV.computeHVContributions(solutionList);
-  }
+    @Override
+    public void computeDensityEstimator(List<S> solutionList) {
+        fastHV.computeHVContributions(solutionList);
+    }
 }

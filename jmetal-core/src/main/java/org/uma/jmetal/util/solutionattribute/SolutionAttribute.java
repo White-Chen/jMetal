@@ -21,8 +21,10 @@ import org.uma.jmetal.solution.Solution;
  *
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
-public interface SolutionAttribute <S extends Solution<?>, V> {
-  public void setAttribute(S solution, V value) ;
-  public V getAttribute(S solution) ;
-  public Object getAttributeID() ;
+public interface SolutionAttribute<S extends Solution<?>, V> {
+    public void setAttribute(S solution, V value);
+
+    public V getAttribute(S solution);
+
+    public Object getAttributeID();
 }

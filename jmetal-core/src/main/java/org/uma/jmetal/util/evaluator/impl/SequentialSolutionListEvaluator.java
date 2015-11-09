@@ -29,28 +29,29 @@ import java.util.logging.Level;
  */
 public class SequentialSolutionListEvaluator<S extends Solution<?>> implements SolutionListEvaluator<S> {
 
-  @Override
-  public List<S> evaluate(List<S> solutionList, Problem<S> problem) throws JMetalException {
-    try {
-      if (problem instanceof ConstrainedProblem) {
-        for (int i = 0 ; i < solutionList.size(); i++) {
-          problem.evaluate(solutionList.get(i)) ;
-          ((ConstrainedProblem<S>)problem).evaluateConstraints(solutionList.get(i)) ;
+    @Override
+    public List<S> evaluate(List<S> solutionList, Problem<S> problem) throws JMetalException {
+        try {
+            if (problem instanceof ConstrainedProblem) {
+                for (int i = 0; i < solutionList.size(); i++) {
+                    problem.evaluate(solutionList.get(i));
+                    ((ConstrainedProblem<S>) problem).evaluateConstraints(solutionList.get(i));
+                }
+            } else {
+                for (int i = 0; i < solutionList.size(); i++) {
+                    problem.evaluate(solutionList.get(i));
+                }
+            }
+        } catch (JMetalException e) {
+            JMetalLogger.logger.log(Level.SEVERE, "Error evaluating solution", e);
+            throw new JMetalException("Error in SequentialSolutionSetEvaluator.evaluate()");
         }
-      } else {
-        for (int i = 0 ; i < solutionList.size(); i++) {
-          problem.evaluate(solutionList.get(i)) ;
-        }
-      }
-    } catch (JMetalException e) {
-      JMetalLogger.logger.log(Level.SEVERE, "Error evaluating solution", e);
-      throw new JMetalException("Error in SequentialSolutionSetEvaluator.evaluate()") ;
+
+        return solutionList;
     }
 
-    return solutionList;
-  }
-
-  @Override public void shutdown() {
-    ;
-  }
+    @Override
+    public void shutdown() {
+        ;
+    }
 }

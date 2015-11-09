@@ -22,7 +22,13 @@ import java.io.Serializable;
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public interface FileOutputContext extends Serializable {
-  public BufferedWriter getFileWriter() ;
-  public String getSeparator() ;
-  public void setSeparator(String separator) ;
+    public BufferedWriter getFileWriter();
+
+    public String getSeparator();
+
+    public void setSeparator(String separator);
+
+    public boolean getIsAppend();
+
+    public void setIsAppend(boolean isAppend);
 }

@@ -2,7 +2,10 @@ package org.uma.jmetal.algorithm.multiobjective.nsgaii;
 
 import org.uma.jmetal.measure.Measurable;
 import org.uma.jmetal.measure.MeasureManager;
-import org.uma.jmetal.measure.impl.*;
+import org.uma.jmetal.measure.impl.BasicMeasure;
+import org.uma.jmetal.measure.impl.CountingMeasure;
+import org.uma.jmetal.measure.impl.DurationMeasure;
+import org.uma.jmetal.measure.impl.SimpleMeasureManager;
 import org.uma.jmetal.operator.CrossoverOperator;
 import org.uma.jmetal.operator.MutationOperator;
 import org.uma.jmetal.operator.SelectionOperator;
@@ -17,76 +20,80 @@ import java.util.List;
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public class NSGAIIMeasures<S extends Solution<?>> extends NSGAII<S> implements Measurable {
-  private CountingMeasure evaluations ;
-  private DurationMeasure durationMeasure ;
-  private SimpleMeasureManager measureManager ;
+    private CountingMeasure evaluations;
+    private DurationMeasure durationMeasure;
+    private SimpleMeasureManager measureManager;
 
-  private BasicMeasure<List<S>> solutionListMeasure ;
-  private BasicMeasure<Integer> numberOfNonDominatedSolutionsInPopulation ;
+    private BasicMeasure<List<S>> solutionListMeasure;
+    private BasicMeasure<Integer> numberOfNonDominatedSolutionsInPopulation;
 
-  /**
-   * Constructor
-   */
-  public NSGAIIMeasures(Problem<S> problem, int maxIterations, int populationSize,
-      CrossoverOperator<S> crossoverOperator, MutationOperator<S> mutationOperator,
-      SelectionOperator<List<S>, S> selectionOperator, SolutionListEvaluator<S> evaluator) {
-    super(problem, maxIterations, populationSize, crossoverOperator, mutationOperator,
-        selectionOperator, evaluator) ;
+    /**
+     * Constructor
+     */
+    public NSGAIIMeasures(Problem<S> problem, int maxIterations, int populationSize,
+                          CrossoverOperator<S> crossoverOperator, MutationOperator<S> mutationOperator,
+                          SelectionOperator<List<S>, S> selectionOperator, SolutionListEvaluator<S> evaluator) {
+        super(problem, maxIterations, populationSize, crossoverOperator, mutationOperator,
+                selectionOperator, evaluator);
 
-    initMeasures() ;
-  }
+        initMeasures();
+    }
 
-  @Override protected void initProgress() {
-    evaluations.reset(getMaxPopulationSize());
-  }
+    @Override
+    protected void initProgress() {
+        evaluations.reset(getMaxPopulationSize());
+    }
 
-  @Override protected void updateProgress() {
-    evaluations.increment(getMaxPopulationSize());
+    @Override
+    protected void updateProgress() {
+        evaluations.increment(getMaxPopulationSize());
 
-    solutionListMeasure.push(getPopulation());
-  }
+        solutionListMeasure.push(getPopulation());
+    }
 
-  @Override protected boolean isStoppingConditionReached() {
-    return evaluations.get() >= maxEvaluations;
-  }
+    @Override
+    protected boolean isStoppingConditionReached() {
+        return evaluations.get() >= maxEvaluations;
+    }
 
-  @Override
-  public void run() {
-    durationMeasure.reset();
-    durationMeasure.start();
-    super.run();
-    durationMeasure.stop();
-  }
+    @Override
+    public void run() {
+        durationMeasure.reset();
+        durationMeasure.start();
+        super.run();
+        durationMeasure.stop();
+    }
 
-  /* Measures code */
-  private void initMeasures() {
-    durationMeasure = new DurationMeasure() ;
-    evaluations = new CountingMeasure(0) ;
-    numberOfNonDominatedSolutionsInPopulation = new BasicMeasure<>() ;
-    solutionListMeasure = new BasicMeasure<>() ;
+    /* Measures code */
+    private void initMeasures() {
+        durationMeasure = new DurationMeasure();
+        evaluations = new CountingMeasure(0);
+        numberOfNonDominatedSolutionsInPopulation = new BasicMeasure<>();
+        solutionListMeasure = new BasicMeasure<>();
 
-    measureManager = new SimpleMeasureManager() ;
-    measureManager.setPullMeasure("currentExecutionTime", durationMeasure);
-    measureManager.setPullMeasure("currentEvaluation", evaluations);
-    measureManager.setPullMeasure("numberOfNonDominatedSolutionsInPopulation",
-        numberOfNonDominatedSolutionsInPopulation);
+        measureManager = new SimpleMeasureManager();
+        measureManager.setPullMeasure("currentExecutionTime", durationMeasure);
+        measureManager.setPullMeasure("currentEvaluation", evaluations);
+        measureManager.setPullMeasure("numberOfNonDominatedSolutionsInPopulation",
+                numberOfNonDominatedSolutionsInPopulation);
 
-    measureManager.setPushMeasure("currentPopulation", solutionListMeasure);
-    measureManager.setPushMeasure("currentEvaluation", evaluations);
-  }
+        measureManager.setPushMeasure("currentPopulation", solutionListMeasure);
+        measureManager.setPushMeasure("currentEvaluation", evaluations);
+    }
 
-  @Override
-  public MeasureManager getMeasureManager() {
-    return measureManager ;
-  }
+    @Override
+    public MeasureManager getMeasureManager() {
+        return measureManager;
+    }
 
-  @Override protected List<S> replacement(List<S> population,
-      List<S> offspringPopulation) {
-    List<S> pop = super.replacement(population, offspringPopulation) ;
+    @Override
+    protected List<S> replacement(List<S> population,
+                                  List<S> offspringPopulation) {
+        List<S> pop = super.replacement(population, offspringPopulation);
 
-    Ranking<S> ranking = computeRanking(pop);
-    numberOfNonDominatedSolutionsInPopulation.set(ranking.getSubfront(0).size());
+        Ranking<S> ranking = computeRanking(pop);
+        numberOfNonDominatedSolutionsInPopulation.set(ranking.getSubfront(0).size());
 
-    return pop;
-  }
+        return pop;
+    }
 }

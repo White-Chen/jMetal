@@ -23,12 +23,21 @@ import org.uma.jmetal.solution.Solution;
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public class NullMutation implements MutationOperator<Solution<?>> {
-  public NullMutation() {
-  }
+    private double mutationProbability;
 
-  /** Execute() method */
-  @Override
-  public Solution<?> execute(Solution<?> source) {
-    return source;
-  }
+    public NullMutation() {
+    }
+
+    /**
+     * Execute() method
+     */
+    @Override
+    public Solution<?> execute(Solution<?> source) {
+        return source;
+    }
+
+    @Override
+    public void setMutationProbability(Double mutationProbability) {
+        this.mutationProbability = mutationProbability;
+    }
 }

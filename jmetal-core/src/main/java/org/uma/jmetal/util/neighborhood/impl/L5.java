@@ -25,19 +25,19 @@ import org.uma.jmetal.util.neighborhood.util.TwoDimensionalMesh;
  * @author Juan J. Durillo
  */
 public class L5<S extends Solution<?>> extends TwoDimensionalMesh<S> {
-  private static final int [] north      = {-1,  0};
-  private static final int [] south      = { 1 , 0};
-  private static final int [] east       = { 0 , 1};
-  private static final int [] west       = { 0 ,-1};
+    private static final int[] north = {-1, 0};
+    private static final int[] south = {1, 0};
+    private static final int[] east = {0, 1};
+    private static final int[] west = {0, -1};
 
-  private static final int [][] neighborhood = {north, south, west, east};
+    private static final int[][] neighborhood = {north, south, west, east};
 
-  /**
-   * Constructor.
-   * Defines a neighborhood for solutionSetSize (it has to have an exact squared root)
-   */
-  public L5(int rows, int columns) {
-    super(rows, columns, neighborhood) ;
-  }
+    /**
+     * Constructor.
+     * Defines a neighborhood for solutionSetSize (it has to have an exact squared root)
+     */
+    public L5(int rows, int columns) {
+        super(rows, columns, neighborhood);
+    }
 }
 

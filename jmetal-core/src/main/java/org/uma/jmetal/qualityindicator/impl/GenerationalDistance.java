@@ -43,87 +43,89 @@ import java.util.List;
  * @author Juan J. Durillo
  */
 public class GenerationalDistance<Evaluate extends List<? extends Solution<?>>>
-    extends SimpleDescribedEntity
-    implements QualityIndicator<Evaluate,Double> {
-  private double pow = 2.0;
+        extends SimpleDescribedEntity
+        implements QualityIndicator<Evaluate, Double> {
+    private double pow = 2.0;
 
-  private Front referenceParetoFront ;
+    private Front referenceParetoFront;
 
-  /**
-   * Constructor
-   *
-   * @param referenceParetoFrontFile
-   * @param p
-   * @throws FileNotFoundException
-   */
-  public GenerationalDistance(String referenceParetoFrontFile, double p) throws FileNotFoundException {
-    super("GD", "Generational distance quality indicator") ;
-    if (referenceParetoFrontFile == null) {
-      throw new JMetalException("The pareto front object is null");
+    /**
+     * Constructor
+     *
+     * @param referenceParetoFrontFile
+     * @param p
+     * @throws FileNotFoundException
+     */
+    public GenerationalDistance(String referenceParetoFrontFile, double p) throws FileNotFoundException {
+        super("GD", "Generational distance quality indicator");
+        if (referenceParetoFrontFile == null) {
+            throw new JMetalException("The pareto front object is null");
+        }
+
+        Front front = new ArrayFront(referenceParetoFrontFile);
+        referenceParetoFront = front;
+        pow = p;
     }
 
-    Front front = new ArrayFront(referenceParetoFrontFile);
-    referenceParetoFront = front ;
-    pow = p ;
-  }
-
-  /**
-   * Constructor
-   *
-   * @param referenceParetoFrontFile
-   * @throws FileNotFoundException
-   */
-  public GenerationalDistance(String referenceParetoFrontFile) throws FileNotFoundException {
-    this(referenceParetoFrontFile, 2.0) ;
-  }
-
-  /**
-   * Constructor
-   *
-   * @param referenceParetoFront
-   */
-  public GenerationalDistance(Front referenceParetoFront) {
-    super("GD", "Generational distance quality indicator") ;
-    if (referenceParetoFront == null) {
-      throw new JMetalException("The pareto front is null");
+    /**
+     * Constructor
+     *
+     * @param referenceParetoFrontFile
+     * @throws FileNotFoundException
+     */
+    public GenerationalDistance(String referenceParetoFrontFile) throws FileNotFoundException {
+        this(referenceParetoFrontFile, 2.0);
     }
 
-    this.referenceParetoFront = referenceParetoFront ;
-  }
+    /**
+     * Constructor
+     *
+     * @param referenceParetoFront
+     */
+    public GenerationalDistance(Front referenceParetoFront) {
+        super("GD", "Generational distance quality indicator");
+        if (referenceParetoFront == null) {
+            throw new JMetalException("The pareto front is null");
+        }
 
-  /**
-   * Evaluate() method
-   * @param solutionList
-   * @return
-   */
-  @Override public Double evaluate(Evaluate solutionList) {
-    if (solutionList == null) {
-      throw new JMetalException("The pareto front approximation is null") ;
+        this.referenceParetoFront = referenceParetoFront;
     }
 
-    return generationalDistance(new ArrayFront(solutionList), referenceParetoFront);
-  }
+    /**
+     * Evaluate() method
+     *
+     * @param solutionList
+     * @return
+     */
+    @Override
+    public Double evaluate(Evaluate solutionList) {
+        if (solutionList == null) {
+            throw new JMetalException("The pareto front approximation is null");
+        }
 
-  /**
-   * Returns the generational distance value for a given front
-   *
-   * @param front           The front
-   * @param referenceFront The reference pareto front
-   */
-  public double generationalDistance(Front front, Front referenceFront) {
-    double sum = 0.0;
-    for (int i = 0; i < front.getNumberOfPoints(); i++) {
-      sum += Math.pow(FrontUtils.distanceToClosestPoint(front.getPoint(i),
-          referenceFront), pow);
+        return generationalDistance(new ArrayFront(solutionList), referenceParetoFront);
     }
 
-    sum = Math.pow(sum, 1.0 / pow);
+    /**
+     * Returns the generational distance value for a given front
+     *
+     * @param front          The front
+     * @param referenceFront The reference pareto front
+     */
+    public double generationalDistance(Front front, Front referenceFront) {
+        double sum = 0.0;
+        for (int i = 0; i < front.getNumberOfPoints(); i++) {
+            sum += Math.pow(FrontUtils.distanceToClosestPoint(front.getPoint(i),
+                    referenceFront), pow);
+        }
 
-    return sum / front.getNumberOfPoints();
-  }
+        sum = Math.pow(sum, 1.0 / pow);
 
-  @Override
-  public String getName() {
-    return super.getName();
-  }
+        return sum / front.getNumberOfPoints();
+    }
+
+    @Override
+    public String getName() {
+        return super.getName();
+    }
 }

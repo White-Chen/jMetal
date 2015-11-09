@@ -25,60 +25,69 @@ import org.uma.jmetal.util.pseudorandom.JMetalRandom;
  * @author Juan J. Durillo
  */
 public class UniformMutation implements MutationOperator<DoubleSolution> {
-  private Double perturbation;
-  private Double mutationProbability = null;
-  private JMetalRandom randomGenenerator ;
+    private Double perturbation;
+    private Double mutationProbability = null;
+    private JMetalRandom randomGenenerator;
 
-  /** Constructor */
-  public UniformMutation(double mutationProbability, double perturbation) {
-    this.mutationProbability = mutationProbability ;
-    this.perturbation = perturbation ;
-    randomGenenerator = JMetalRandom.getInstance() ;
-  }
+    /**
+     * Constructor
+     */
+    public UniformMutation(double mutationProbability, double perturbation) {
+        this.mutationProbability = mutationProbability;
+        this.perturbation = perturbation;
+        randomGenenerator = JMetalRandom.getInstance();
+    }
 
-  /* Getters */
-  public Double getPerturbation() {
-    return perturbation;
-  }
+    /* Getters */
+    public Double getPerturbation() {
+        return perturbation;
+    }
 
-  public Double getMutationProbability() {
-    return mutationProbability;
-  }
+    public Double getMutationProbability() {
+        return mutationProbability;
+    }
 
-  /**
-   * Perform the operation
-   *
-   * @param probability Mutation setProbability
-   * @param solution    The solution to mutate
-   */
-  public void doMutation(double probability, DoubleSolution solution)  {
-    for (int i = 0; i < solution.getNumberOfVariables(); i++) {
-      if (randomGenenerator.nextDouble() < probability) {
-        double rand = randomGenenerator.nextDouble();
-        double tmp = (rand - 0.5) * perturbation;
+    @Override
+    public void setMutationProbability(Double mutationProbability) {
+        this.mutationProbability = mutationProbability;
+    }
 
-        tmp += solution.getVariableValue(i);
+    /**
+     * Perform the operation
+     *
+     * @param probability Mutation setProbability
+     * @param solution    The solution to mutate
+     */
+    public void doMutation(double probability, DoubleSolution solution) {
+        for (int i = 0; i < solution.getNumberOfVariables(); i++) {
+            if (randomGenenerator.nextDouble() < probability) {
+                double rand = randomGenenerator.nextDouble();
+                double tmp = (rand - 0.5) * perturbation;
 
-        if (tmp < solution.getLowerBound(i)) {
-          tmp = solution.getLowerBound(i);
-        } else if (tmp > solution.getUpperBound(i)) {
-          tmp = solution.getUpperBound(i);
+                tmp += solution.getVariableValue(i);
+
+                if (tmp < solution.getLowerBound(i)) {
+                    tmp = solution.getLowerBound(i);
+                } else if (tmp > solution.getUpperBound(i)) {
+                    tmp = solution.getUpperBound(i);
+                }
+
+                solution.setVariableValue(i, tmp);
+            }
+        }
+    }
+
+    /**
+     * Execute() method
+     */
+    @Override
+    public DoubleSolution execute(DoubleSolution solution) {
+        if (null == solution) {
+            throw new JMetalException("Null parameter");
         }
 
-        solution.setVariableValue(i, tmp);
-      }
+        doMutation(mutationProbability, solution);
+
+        return solution;
     }
-  }
-
-  /** Execute() method */
-  @Override
-  public DoubleSolution execute(DoubleSolution solution) {
-    if (null == solution) {
-      throw new JMetalException("Null parameter");
-    }
-
-    doMutation(mutationProbability, solution);
-
-    return solution;
-  }
 }

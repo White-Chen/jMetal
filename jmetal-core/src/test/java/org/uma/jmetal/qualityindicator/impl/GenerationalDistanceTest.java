@@ -30,31 +30,31 @@ import static org.hamcrest.CoreMatchers.containsString;
  * @version 1.0
  */
 public class GenerationalDistanceTest {
-  private static final double EPSILON = 0.0000000000001 ;
+    private static final double EPSILON = 0.0000000000001;
 
-  @Rule
-  public ExpectedException exception = ExpectedException.none();
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
 
-  @Test
-  public void shouldExecuteRaiseAnExceptionIfTheFrontApproximationIsNull() {
-    exception.expect(JMetalException.class);
-    exception.expectMessage(containsString("The pareto front approximation is null"));
+    @Test
+    public void shouldExecuteRaiseAnExceptionIfTheFrontApproximationIsNull() {
+        exception.expect(JMetalException.class);
+        exception.expectMessage(containsString("The pareto front approximation is null"));
 
-    Front front = new ArrayFront(0, 0) ;
+        Front front = new ArrayFront(0, 0);
 
-    GenerationalDistance<List<DoubleSolution>> gd = new GenerationalDistance<List<DoubleSolution>>(front) ;
-    gd.evaluate(null) ;
-  }
+        GenerationalDistance<List<DoubleSolution>> gd = new GenerationalDistance<List<DoubleSolution>>(front);
+        gd.evaluate(null);
+    }
 
-  @Test
-  public void shouldExecuteRaiseAnExceptionIfTheParetoFrontIsNull() {
-    exception.expect(JMetalException.class);
-    exception.expectMessage(containsString("The pareto front is null"));
+    @Test
+    public void shouldExecuteRaiseAnExceptionIfTheParetoFrontIsNull() {
+        exception.expect(JMetalException.class);
+        exception.expectMessage(containsString("The pareto front is null"));
 
-    Front front = null ;
+        Front front = null;
 
-    new GenerationalDistance<>(front) ;
-  }
+        new GenerationalDistance<>(front);
+    }
 /*
   @Test
   public void shouldExecuteRaiseAndExceptionIfTheFrontsContainOnePointWhichIsTheSame() {
@@ -79,59 +79,59 @@ public class GenerationalDistanceTest {
     assertEquals(0.0, gd.evaluate(FrontUtils.convertFrontToSolutionList(frontApproximation)), EPSILON);
   }
   */
-/**
-  @Test
-  public void shouldExecuteReturnTheCorrectValue() {
-    int numberOfDimensions = 2 ;
-    Front frontApproximation = new ArrayFront(3, numberOfDimensions);
-    Front paretoFront = new ArrayFront(4, numberOfDimensions);
 
-    Point point1 = new ArrayPoint(numberOfDimensions) ;
-    point1.setDimensionValue(0, 2.5);
-    point1.setDimensionValue(1, 9.0);
+    /**
+     * @Test public void shouldExecuteReturnTheCorrectValue() {
+     * int numberOfDimensions = 2 ;
+     * Front frontApproximation = new ArrayFront(3, numberOfDimensions);
+     * Front paretoFront = new ArrayFront(4, numberOfDimensions);
+     * <p/>
+     * Point point1 = new ArrayPoint(numberOfDimensions) ;
+     * point1.setDimensionValue(0, 2.5);
+     * point1.setDimensionValue(1, 9.0);
+     * <p/>
+     * Point point2 = new ArrayPoint(numberOfDimensions) ;
+     * point2.setDimensionValue(0, 3.0);
+     * point2.setDimensionValue(1, 6.0);
+     * <p/>
+     * Point point3 = new ArrayPoint(numberOfDimensions) ;
+     * point3.setDimensionValue(0, 5.0);
+     * point3.setDimensionValue(1, 4.0);
+     * <p/>
+     * frontApproximation.setPoint(0, point1);
+     * frontApproximation.setPoint(1, point2);
+     * frontApproximation.setPoint(2, point3);
+     * <p/>
+     * Point point4 = new ArrayPoint(numberOfDimensions) ;
+     * point4.setDimensionValue(0, 1.5);
+     * point4.setDimensionValue(1, 10.0);
+     * <p/>
+     * Point point5 = new ArrayPoint(numberOfDimensions) ;
+     * point5.setDimensionValue(0, 2.0);
+     * point5.setDimensionValue(1, 8.0);
+     * <p/>
+     * Point point6 = new ArrayPoint(numberOfDimensions) ;
+     * point6.setDimensionValue(0, 3.0);
+     * point6.setDimensionValue(1, 6.0);
+     * <p/>
+     * Point point7 = new ArrayPoint(numberOfDimensions) ;
+     * point7.setDimensionValue(0, 4.0);
+     * point7.setDimensionValue(1, 4.0);
+     * <p/>
+     * paretoFront.setPoint(0, point4);
+     * paretoFront.setPoint(1, point5);
+     * paretoFront.setPoint(2, point6);
+     * paretoFront.setPoint(3, point7);
+     * <p/>
+     * QualityIndicator gd = new GenerationalDistance(paretoFront) ;
+     * <p/>
+     * assertEquals(0.5, (Double)gd.evaluate(FrontUtils.convertFrontToSolutionList(frontApproximation)), EPSILON);
+     * }
+     */
 
-    Point point2 = new ArrayPoint(numberOfDimensions) ;
-    point2.setDimensionValue(0, 3.0);
-    point2.setDimensionValue(1, 6.0);
-
-    Point point3 = new ArrayPoint(numberOfDimensions) ;
-    point3.setDimensionValue(0, 5.0);
-    point3.setDimensionValue(1, 4.0);
-
-    frontApproximation.setPoint(0, point1);
-    frontApproximation.setPoint(1, point2);
-    frontApproximation.setPoint(2, point3);
-
-    Point point4 = new ArrayPoint(numberOfDimensions) ;
-    point4.setDimensionValue(0, 1.5);
-    point4.setDimensionValue(1, 10.0);
-
-    Point point5 = new ArrayPoint(numberOfDimensions) ;
-    point5.setDimensionValue(0, 2.0);
-    point5.setDimensionValue(1, 8.0);
-
-    Point point6 = new ArrayPoint(numberOfDimensions) ;
-    point6.setDimensionValue(0, 3.0);
-    point6.setDimensionValue(1, 6.0);
-
-    Point point7 = new ArrayPoint(numberOfDimensions) ;
-    point7.setDimensionValue(0, 4.0);
-    point7.setDimensionValue(1, 4.0);
-
-    paretoFront.setPoint(0, point4);
-    paretoFront.setPoint(1, point5);
-    paretoFront.setPoint(2, point6);
-    paretoFront.setPoint(3, point7);
-
-    QualityIndicator gd = new GenerationalDistance(paretoFront) ;
-
-    assertEquals(0.5, (Double)gd.evaluate(FrontUtils.convertFrontToSolutionList(frontApproximation)), EPSILON);
-  }
-*/
-
-  @Test
-  public void shouldGetNameReturnTheCorrectValue() {
-    //assertEquals("GD", generationalDistance.getName());
-  }
+    @Test
+    public void shouldGetNameReturnTheCorrectValue() {
+        //assertEquals("GD", generationalDistance.getName());
+    }
 
 }

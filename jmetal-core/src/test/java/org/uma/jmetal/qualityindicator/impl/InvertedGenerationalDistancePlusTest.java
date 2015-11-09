@@ -35,25 +35,25 @@ import static org.junit.Assert.assertEquals;
  */
 public class InvertedGenerationalDistancePlusTest {
 
-  private static final double EPSILON = 0.0000000000001 ;
+    private static final double EPSILON = 0.0000000000001;
 
-  @Rule
-  public ExpectedException exception = ExpectedException.none();
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
 
-  @Test
-  public void shouldConstructorRaiseAnExceptionIfTheParetoFrontIsNull() {
-    exception.expect(JMetalException.class);
-    exception.expectMessage(containsString("The pareto front approximation is null"));
+    @Test
+    public void shouldConstructorRaiseAnExceptionIfTheParetoFrontIsNull() {
+        exception.expect(JMetalException.class);
+        exception.expectMessage(containsString("The pareto front approximation is null"));
 
-    Front front = null ;
+        Front front = null;
 
-    new InvertedGenerationalDistancePlus<List<DoubleSolution>>(front) ;
-  }
+        new InvertedGenerationalDistancePlus<List<DoubleSolution>>(front);
+    }
 
-  @Test (expected = FileNotFoundException.class)
-  public void shouldConstructorRaiseAnExceptionIfFileNameIsNull() throws FileNotFoundException {
-    new InvertedGenerationalDistancePlus<>("nonExistingFile") ;
-  }
+    @Test(expected = FileNotFoundException.class)
+    public void shouldConstructorRaiseAnExceptionIfFileNameIsNull() throws FileNotFoundException {
+        new InvertedGenerationalDistancePlus<>("nonExistingFile");
+    }
 
   /* TODO test pending of solving an issue in class ArrayFront
   @Test (expected = JMetalException.class)
@@ -62,136 +62,136 @@ public class InvertedGenerationalDistancePlusTest {
   }
   */
 
-  @Test
-  public void shouldEvaluateRaiseAnExceptionIfTheFrontApproximationIsNull() {
-    exception.expect(JMetalException.class);
-    exception.expectMessage(containsString("The pareto front approximation is null"));
+    @Test
+    public void shouldEvaluateRaiseAnExceptionIfTheFrontApproximationIsNull() {
+        exception.expect(JMetalException.class);
+        exception.expectMessage(containsString("The pareto front approximation is null"));
 
-    Front front = new ArrayFront(0, 0) ;
+        Front front = new ArrayFront(0, 0);
 
-    InvertedGenerationalDistancePlus<List<DoubleSolution>> igdPlus =
-        new InvertedGenerationalDistancePlus<List<DoubleSolution>>(front) ;
-    igdPlus.evaluate(null) ;
-  }
-
-  @Test
-  public void shouldEvaluateReturnZeroIfTheFrontAndTheReferenceFrontContainsTheSamePoints() {
-    int numberOfPoints = 1 ;
-    int numberOfDimensions = 2 ;
-    Front frontApproximation = new ArrayFront(numberOfPoints, numberOfDimensions);
-    Front paretoFront = new ArrayFront(numberOfPoints, numberOfDimensions);
-
-    Point point1 = new ArrayPoint(numberOfDimensions) ;
-    point1.setDimensionValue(0, 4.0);
-    point1.setDimensionValue(1, 10.0);
-
-    frontApproximation.setPoint(0, point1);
-    paretoFront.setPoint(0, point1);
-
-    InvertedGenerationalDistancePlus<List<DoubleSolution>> igdPlus =
-        new InvertedGenerationalDistancePlus<List<DoubleSolution>>(paretoFront) ;
-
-    assertEquals(0.0, igdPlus.evaluate(FrontUtils.convertFrontToSolutionList(frontApproximation)),
-        EPSILON);
-  }
-
-  @Test
-  public void shouldEvaluateReturnTheCorrectValueCaseA() {
-    int numberOfPointsOfTheParetoFront = 3 ;
-    int numberOfPointsOfTheFront = 3 ;
-    int numberOfDimensions = 2 ;
-
-    Front frontApproximation = new ArrayFront(numberOfPointsOfTheFront, numberOfDimensions);
-    Front paretoFront = new ArrayFront(numberOfPointsOfTheParetoFront, numberOfDimensions);
-
-    Point [] points ;
-    points = new ArrayPoint[numberOfPointsOfTheParetoFront] ;
-    for (int i = 0; i < numberOfPointsOfTheParetoFront; i++) {
-      points[i] = new ArrayPoint(numberOfDimensions) ;
+        InvertedGenerationalDistancePlus<List<DoubleSolution>> igdPlus =
+                new InvertedGenerationalDistancePlus<List<DoubleSolution>>(front);
+        igdPlus.evaluate(null);
     }
 
-    points[0].setDimensionValue(0, 0.1);
-    points[0].setDimensionValue(1, 0.7);
-    points[1].setDimensionValue(0, 0.2);
-    points[1].setDimensionValue(1, 0.3);
-    points[2].setDimensionValue(0, 0.6);
-    points[2].setDimensionValue(1, 0.2);
+    @Test
+    public void shouldEvaluateReturnZeroIfTheFrontAndTheReferenceFrontContainsTheSamePoints() {
+        int numberOfPoints = 1;
+        int numberOfDimensions = 2;
+        Front frontApproximation = new ArrayFront(numberOfPoints, numberOfDimensions);
+        Front paretoFront = new ArrayFront(numberOfPoints, numberOfDimensions);
 
-    paretoFront.setPoint(0, points[0]);
-    paretoFront.setPoint(1, points[1]);
-    paretoFront.setPoint(2, points[2]);
+        Point point1 = new ArrayPoint(numberOfDimensions);
+        point1.setDimensionValue(0, 4.0);
+        point1.setDimensionValue(1, 10.0);
 
-    points = new ArrayPoint[numberOfPointsOfTheFront] ;
-    for (int i = 0; i < numberOfPointsOfTheFront; i++) {
-      points[i] = new ArrayPoint(numberOfDimensions) ;
+        frontApproximation.setPoint(0, point1);
+        paretoFront.setPoint(0, point1);
+
+        InvertedGenerationalDistancePlus<List<DoubleSolution>> igdPlus =
+                new InvertedGenerationalDistancePlus<List<DoubleSolution>>(paretoFront);
+
+        assertEquals(0.0, igdPlus.evaluate(FrontUtils.convertFrontToSolutionList(frontApproximation)),
+                EPSILON);
     }
 
-    points[0].setDimensionValue(0, 0.2);
-    points[0].setDimensionValue(1, 0.5);
-    points[1].setDimensionValue(0, 0.3);
-    points[1].setDimensionValue(1, 0.4);
-    points[2].setDimensionValue(0, 0.4);
-    points[2].setDimensionValue(1, 0.3);
+    @Test
+    public void shouldEvaluateReturnTheCorrectValueCaseA() {
+        int numberOfPointsOfTheParetoFront = 3;
+        int numberOfPointsOfTheFront = 3;
+        int numberOfDimensions = 2;
 
-    frontApproximation.setPoint(0, points[0]);
-    frontApproximation.setPoint(1, points[1]);
-    frontApproximation.setPoint(2, points[2]);
+        Front frontApproximation = new ArrayFront(numberOfPointsOfTheFront, numberOfDimensions);
+        Front paretoFront = new ArrayFront(numberOfPointsOfTheParetoFront, numberOfDimensions);
 
-    InvertedGenerationalDistancePlus<List<DoubleSolution>> igdPlus =
-        new InvertedGenerationalDistancePlus<List<DoubleSolution>>(paretoFront) ;
+        Point[] points;
+        points = new ArrayPoint[numberOfPointsOfTheParetoFront];
+        for (int i = 0; i < numberOfPointsOfTheParetoFront; i++) {
+            points[i] = new ArrayPoint(numberOfDimensions);
+        }
 
-    assertEquals((2.0 * Math.sqrt(0.01) + Math.sqrt(0.02))/3.0,
-        igdPlus.evaluate(FrontUtils.convertFrontToSolutionList(frontApproximation)),
-        EPSILON);
-  }
+        points[0].setDimensionValue(0, 0.1);
+        points[0].setDimensionValue(1, 0.7);
+        points[1].setDimensionValue(0, 0.2);
+        points[1].setDimensionValue(1, 0.3);
+        points[2].setDimensionValue(0, 0.6);
+        points[2].setDimensionValue(1, 0.2);
 
-  @Test
-  public void shouldEvaluateReturnTheCorrectValueCaseB() {
-    int numberOfPointsOfTheParetoFront = 3 ;
-    int numberOfPointsOfTheFront = 3 ;
-    int numberOfDimensions = 2 ;
+        paretoFront.setPoint(0, points[0]);
+        paretoFront.setPoint(1, points[1]);
+        paretoFront.setPoint(2, points[2]);
 
-    Front frontApproximation = new ArrayFront(numberOfPointsOfTheFront, numberOfDimensions);
-    Front paretoFront = new ArrayFront(numberOfPointsOfTheParetoFront, numberOfDimensions);
+        points = new ArrayPoint[numberOfPointsOfTheFront];
+        for (int i = 0; i < numberOfPointsOfTheFront; i++) {
+            points[i] = new ArrayPoint(numberOfDimensions);
+        }
 
-    Point [] points ;
-    points = new ArrayPoint[numberOfPointsOfTheParetoFront] ;
-    for (int i = 0; i < numberOfPointsOfTheParetoFront; i++) {
-      points[i] = new ArrayPoint(numberOfDimensions) ;
+        points[0].setDimensionValue(0, 0.2);
+        points[0].setDimensionValue(1, 0.5);
+        points[1].setDimensionValue(0, 0.3);
+        points[1].setDimensionValue(1, 0.4);
+        points[2].setDimensionValue(0, 0.4);
+        points[2].setDimensionValue(1, 0.3);
+
+        frontApproximation.setPoint(0, points[0]);
+        frontApproximation.setPoint(1, points[1]);
+        frontApproximation.setPoint(2, points[2]);
+
+        InvertedGenerationalDistancePlus<List<DoubleSolution>> igdPlus =
+                new InvertedGenerationalDistancePlus<List<DoubleSolution>>(paretoFront);
+
+        assertEquals((2.0 * Math.sqrt(0.01) + Math.sqrt(0.02)) / 3.0,
+                igdPlus.evaluate(FrontUtils.convertFrontToSolutionList(frontApproximation)),
+                EPSILON);
     }
 
-    points[0].setDimensionValue(0, 0.1);
-    points[0].setDimensionValue(1, 0.7);
-    points[1].setDimensionValue(0, 0.2);
-    points[1].setDimensionValue(1, 0.3);
-    points[2].setDimensionValue(0, 0.6);
-    points[2].setDimensionValue(1, 0.2);
+    @Test
+    public void shouldEvaluateReturnTheCorrectValueCaseB() {
+        int numberOfPointsOfTheParetoFront = 3;
+        int numberOfPointsOfTheFront = 3;
+        int numberOfDimensions = 2;
 
-    paretoFront.setPoint(0, points[0]);
-    paretoFront.setPoint(1, points[1]);
-    paretoFront.setPoint(2, points[2]);
+        Front frontApproximation = new ArrayFront(numberOfPointsOfTheFront, numberOfDimensions);
+        Front paretoFront = new ArrayFront(numberOfPointsOfTheParetoFront, numberOfDimensions);
 
-    points = new ArrayPoint[numberOfPointsOfTheFront] ;
-    for (int i = 0; i < numberOfPointsOfTheFront; i++) {
-      points[i] = new ArrayPoint(numberOfDimensions) ;
+        Point[] points;
+        points = new ArrayPoint[numberOfPointsOfTheParetoFront];
+        for (int i = 0; i < numberOfPointsOfTheParetoFront; i++) {
+            points[i] = new ArrayPoint(numberOfDimensions);
+        }
+
+        points[0].setDimensionValue(0, 0.1);
+        points[0].setDimensionValue(1, 0.7);
+        points[1].setDimensionValue(0, 0.2);
+        points[1].setDimensionValue(1, 0.3);
+        points[2].setDimensionValue(0, 0.6);
+        points[2].setDimensionValue(1, 0.2);
+
+        paretoFront.setPoint(0, points[0]);
+        paretoFront.setPoint(1, points[1]);
+        paretoFront.setPoint(2, points[2]);
+
+        points = new ArrayPoint[numberOfPointsOfTheFront];
+        for (int i = 0; i < numberOfPointsOfTheFront; i++) {
+            points[i] = new ArrayPoint(numberOfDimensions);
+        }
+
+        points[0].setDimensionValue(0, 0.3);
+        points[0].setDimensionValue(1, 0.7);
+        points[1].setDimensionValue(0, 0.5);
+        points[1].setDimensionValue(1, 0.6);
+        points[2].setDimensionValue(0, 0.7);
+        points[2].setDimensionValue(1, 0.4);
+
+        frontApproximation.setPoint(0, points[0]);
+        frontApproximation.setPoint(1, points[1]);
+        frontApproximation.setPoint(2, points[2]);
+
+        InvertedGenerationalDistancePlus<List<DoubleSolution>> igdPlus =
+                new InvertedGenerationalDistancePlus<List<DoubleSolution>>(paretoFront);
+
+        assertEquals((0.2 + Math.sqrt(0.01 + 0.16) + Math.sqrt(0.01 + 0.04)) / 3.0,
+                igdPlus.evaluate(FrontUtils.convertFrontToSolutionList(frontApproximation)),
+                EPSILON);
     }
-
-    points[0].setDimensionValue(0, 0.3);
-    points[0].setDimensionValue(1, 0.7);
-    points[1].setDimensionValue(0, 0.5);
-    points[1].setDimensionValue(1, 0.6);
-    points[2].setDimensionValue(0, 0.7);
-    points[2].setDimensionValue(1, 0.4);
-
-    frontApproximation.setPoint(0, points[0]);
-    frontApproximation.setPoint(1, points[1]);
-    frontApproximation.setPoint(2, points[2]);
-
-    InvertedGenerationalDistancePlus<List<DoubleSolution>> igdPlus =
-        new InvertedGenerationalDistancePlus<List<DoubleSolution>>(paretoFront) ;
-
-    assertEquals((0.2 + Math.sqrt(0.01+0.16) + Math.sqrt(0.01+0.04))/3.0,
-        igdPlus.evaluate(FrontUtils.convertFrontToSolutionList(frontApproximation)),
-        EPSILON);
-  }
 }

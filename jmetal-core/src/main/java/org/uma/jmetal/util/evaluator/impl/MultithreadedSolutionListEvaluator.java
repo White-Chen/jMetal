@@ -24,33 +24,34 @@ import java.util.List;
  * @author Antonio J. Nebro
  */
 public class MultithreadedSolutionListEvaluator<S extends Solution<?>> implements SolutionListEvaluator<S> {
-  private MultithreadedEvaluator<S> evaluator;
-  private Problem<S> problem;
-  private int numberOfThreads ;
+    private MultithreadedEvaluator<S> evaluator;
+    private Problem<S> problem;
+    private int numberOfThreads;
 
-  public MultithreadedSolutionListEvaluator(int numberOfThreads, Problem<S> problem) {
-  	this.numberOfThreads = numberOfThreads ;
-    evaluator = new MultithreadedEvaluator<S>(numberOfThreads)  ;
-    this.problem = problem ;
-    evaluator.start(problem) ;
-  }
-
-  @Override
-  public List<S> evaluate(List<S> SolutionList, Problem<S> problem) {
-    for (int i = 0 ; i < SolutionList.size(); i++) {
-      evaluator.addTask(new Object[] {SolutionList.get(i)});
+    public MultithreadedSolutionListEvaluator(int numberOfThreads, Problem<S> problem) {
+        this.numberOfThreads = numberOfThreads;
+        evaluator = new MultithreadedEvaluator<S>(numberOfThreads);
+        this.problem = problem;
+        evaluator.start(problem);
     }
-    evaluator.parallelExecution() ;
 
-    return SolutionList;
-  }
+    @Override
+    public List<S> evaluate(List<S> SolutionList, Problem<S> problem) {
+        for (int i = 0; i < SolutionList.size(); i++) {
+            evaluator.addTask(new Object[]{SolutionList.get(i)});
+        }
+        evaluator.parallelExecution();
 
-  public int getNumberOfThreads() {
-  	return numberOfThreads ;
-  }
-  
-  @Override public void shutdown() {
-    evaluator.stop();
-  }
+        return SolutionList;
+    }
+
+    public int getNumberOfThreads() {
+        return numberOfThreads;
+    }
+
+    @Override
+    public void shutdown() {
+        evaluator.stop();
+    }
 
 }

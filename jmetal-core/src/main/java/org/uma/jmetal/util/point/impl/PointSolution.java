@@ -24,108 +24,120 @@ import java.util.Arrays;
  * @author Antonio J. Nebro
  */
 public class PointSolution implements Solution<Double> {
-  private int numberOfObjectives ;
-  private double[] objectives;
+    private int numberOfObjectives;
+    private double[] objectives;
 
-  /**
-   * Constructor
-   *
-   * @param numberOfObjectives
-   */
-  public PointSolution(int numberOfObjectives) {
-    this.numberOfObjectives = numberOfObjectives ;
-    objectives = new double[numberOfObjectives] ;
-  }
-
-  /**
-   * Constructor
-   *
-   * @param point
-   */
-  public PointSolution(Point point) {
-    this.numberOfObjectives = point.getNumberOfDimensions() ;
-    objectives = new double[numberOfObjectives] ;
-
-    for (int i = 0; i < numberOfObjectives; i++) {
-      this.objectives[i] = point.getDimensionValue(i) ;
+    /**
+     * Constructor
+     *
+     * @param numberOfObjectives
+     */
+    public PointSolution(int numberOfObjectives) {
+        this.numberOfObjectives = numberOfObjectives;
+        objectives = new double[numberOfObjectives];
     }
-  }
 
-  /**
-   * Copy constructor
-   *
-   * @param point
-   */
-  public PointSolution(PointSolution point) {
-    this(point.getNumberOfObjectives()) ;
+    /**
+     * Constructor
+     *
+     * @param point
+     */
+    public PointSolution(Point point) {
+        this.numberOfObjectives = point.getNumberOfDimensions();
+        objectives = new double[numberOfObjectives];
 
-    for (int i = 0; i < numberOfObjectives; i++) {
-      this.objectives[i] = point.getObjective(i) ;
+        for (int i = 0; i < numberOfObjectives; i++) {
+            this.objectives[i] = point.getDimensionValue(i);
+        }
     }
-  }
 
-  @Override public void setObjective(int index, double value) {
-    objectives[index]=  value ;
-  }
+    /**
+     * Copy constructor
+     *
+     * @param point
+     */
+    public PointSolution(PointSolution point) {
+        this(point.getNumberOfObjectives());
 
-  @Override public double getObjective(int index) {
-    return objectives[index];
-  }
+        for (int i = 0; i < numberOfObjectives; i++) {
+            this.objectives[i] = point.getObjective(i);
+        }
+    }
 
-  @Override public Double getVariableValue(int index) {
-    return null;
-  }
+    @Override
+    public void setObjective(int index, double value) {
+        objectives[index] = value;
+    }
 
-  @Override public void setVariableValue(int index, Double value) {
+    @Override
+    public double getObjective(int index) {
+        return objectives[index];
+    }
 
-  }
+    @Override
+    public Double getVariableValue(int index) {
+        return null;
+    }
 
-  @Override public String getVariableValueString(int index) {
-    return null;
-  }
+    @Override
+    public void setVariableValue(int index, Double value) {
 
-  @Override public int getNumberOfVariables() {
-    return 0;
-  }
+    }
 
-  @Override public int getNumberOfObjectives() {
-    return numberOfObjectives;
-  }
+    @Override
+    public String getVariableValueString(int index) {
+        return null;
+    }
 
-  @Override public PointSolution copy() {
-    return new PointSolution(this);
-  }
+    @Override
+    public int getNumberOfVariables() {
+        return 0;
+    }
 
-  @Override public void setAttribute(Object id, Object value) {
+    @Override
+    public int getNumberOfObjectives() {
+        return numberOfObjectives;
+    }
 
-  }
+    @Override
+    public PointSolution copy() {
+        return new PointSolution(this);
+    }
 
-  @Override public Object getAttribute(Object id) {
-    return null;
-  }
+    @Override
+    public void setAttribute(Object id, Object value) {
 
-  @Override public boolean equals(Object o) {
-    if (this == o)
-      return true;
-    if (o == null || getClass() != o.getClass())
-      return false;
+    }
 
-    PointSolution that = (PointSolution) o;
+    @Override
+    public Object getAttribute(Object id) {
+        return null;
+    }
 
-    if (numberOfObjectives != that.numberOfObjectives)
-      return false;
-    if (!Arrays.equals(objectives, that.objectives))
-      return false;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
-    return true;
-  }
+        PointSolution that = (PointSolution) o;
 
-  @Override public int hashCode() {
-    return Arrays.hashCode(objectives);
-  }
-  
-  @Override
-	public String toString() {
-		return Arrays.toString(objectives);
-	}
+        if (numberOfObjectives != that.numberOfObjectives)
+            return false;
+        if (!Arrays.equals(objectives, that.objectives))
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(objectives);
+    }
+
+    @Override
+    public String toString() {
+        return Arrays.toString(objectives);
+    }
 }

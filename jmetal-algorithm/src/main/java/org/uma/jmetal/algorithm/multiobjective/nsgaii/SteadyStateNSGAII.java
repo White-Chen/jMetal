@@ -14,37 +14,39 @@ import java.util.List;
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public class SteadyStateNSGAII<S extends Solution<?>> extends NSGAII<S> {
-  /**
-   * Constructor
-   */
-  public SteadyStateNSGAII(Problem<S> problem, int maxEvaluations, int populationSize,
-      CrossoverOperator<S> crossoverOperator, MutationOperator<S> mutationOperator,
-      SelectionOperator<List<S>, S> selectionOperator, SolutionListEvaluator<S> evaluator) {
-    super(problem, maxEvaluations, populationSize, crossoverOperator, mutationOperator,
-        selectionOperator, evaluator);
-  }
+    /**
+     * Constructor
+     */
+    public SteadyStateNSGAII(Problem<S> problem, int maxEvaluations, int populationSize,
+                             CrossoverOperator<S> crossoverOperator, MutationOperator<S> mutationOperator,
+                             SelectionOperator<List<S>, S> selectionOperator, SolutionListEvaluator<S> evaluator) {
+        super(problem, maxEvaluations, populationSize, crossoverOperator, mutationOperator,
+                selectionOperator, evaluator);
+    }
 
-  @Override protected List<S> selection(List<S> population) {
-    List<S> matingPopulation = new ArrayList<>(2);
+    @Override
+    protected List<S> selection(List<S> population) {
+        List<S> matingPopulation = new ArrayList<>(2);
 
-    matingPopulation.add(selectionOperator.execute(population));
-    matingPopulation.add(selectionOperator.execute(population));
+        matingPopulation.add(selectionOperator.execute(population));
+        matingPopulation.add(selectionOperator.execute(population));
 
-    return matingPopulation;
-  }
+        return matingPopulation;
+    }
 
-  @Override protected List<S> reproduction(List<S> population) {
-    List<S> offspringPopulation = new ArrayList<>(1);
+    @Override
+    protected List<S> reproduction(List<S> population) {
+        List<S> offspringPopulation = new ArrayList<>(1);
 
-    List<S> parents = new ArrayList<>(2);
-    parents.add(population.get(0));
-    parents.add(population.get(1));
+        List<S> parents = new ArrayList<>(2);
+        parents.add(population.get(0));
+        parents.add(population.get(1));
 
-    List<S> offspring = crossoverOperator.execute(parents);
+        List<S> offspring = crossoverOperator.execute(parents);
 
-    mutationOperator.execute(offspring.get(0));
+        mutationOperator.execute(offspring.get(0));
 
-    offspringPopulation.add(offspring.get(0));
-    return offspringPopulation;
-  }
+        offspringPopulation.add(offspring.get(0));
+        return offspringPopulation;
+    }
 }

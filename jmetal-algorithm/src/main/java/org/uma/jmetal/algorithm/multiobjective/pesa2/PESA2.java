@@ -20,7 +20,7 @@ import org.uma.jmetal.operator.MutationOperator;
 import org.uma.jmetal.operator.SelectionOperator;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
-import org.uma.jmetal.util.archive.impl.AdaptiveGridArchive;
+import org.uma.jmetal.util.archive.impl.AdaptiveGridArchiveI;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
 
 import java.util.ArrayList;
@@ -31,105 +31,111 @@ import java.util.List;
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public class PESA2<S extends Solution<?>> extends AbstractGeneticAlgorithm<S, List<S>> {
-  private int maxEvaluations ;
-  private int archiveSize ;
-  private int populationSize ;
-  private int biSections ;
+    protected final Problem<S> problem;
+    protected final SolutionListEvaluator<S> evaluator;
+    protected SelectionOperator<AdaptiveGridArchiveI<S>, S> selectionOperator;
+    private int maxEvaluations;
+    private int archiveSize;
+    private int populationSize;
+    private int biSections;
+    private int evaluations;
+    private AdaptiveGridArchiveI<S> archive;
 
-  private int evaluations ;
+    public PESA2(Problem<S> problem, int maxEvaluations, int populationSize, int archiveSize,
+                 int biSections, CrossoverOperator<S> crossoverOperator,
+                 MutationOperator<S> mutationOperator, SolutionListEvaluator<S> evaluator) {
+        this.problem = problem;
+        this.maxEvaluations = maxEvaluations;
+        this.populationSize = populationSize;
+        this.archiveSize = archiveSize;
+        this.biSections = biSections;
 
-  protected final Problem<S> problem;
-  protected SelectionOperator<AdaptiveGridArchive<S>, S> selectionOperator ;
+        this.crossoverOperator = crossoverOperator;
+        this.mutationOperator = mutationOperator;
+        this.selectionOperator = new PESA2Selection<S>();
 
-  private AdaptiveGridArchive<S> archive;
-  protected final SolutionListEvaluator<S> evaluator;
+        this.evaluator = evaluator;
 
-  public PESA2(Problem<S> problem, int maxEvaluations, int populationSize, int archiveSize,
-      int biSections, CrossoverOperator<S> crossoverOperator,
-      MutationOperator<S> mutationOperator, SolutionListEvaluator<S> evaluator) {
-    this.problem = problem ;
-    this.maxEvaluations = maxEvaluations ;
-    this.populationSize = populationSize ;
-    this.archiveSize = archiveSize ;
-    this.biSections = biSections ;
-
-    this.crossoverOperator = crossoverOperator;
-    this.mutationOperator = mutationOperator;
-    this.selectionOperator = new PESA2Selection<S>();
-
-    this.evaluator = evaluator ;
-
-    archive = new AdaptiveGridArchive<>(this.archiveSize, this.biSections,problem.getNumberOfObjectives()) ;
-  }
-
-  @Override protected void initProgress() {
-    evaluations = populationSize ;
-  }
-
-  @Override protected void updateProgress() {
-    evaluations += populationSize ;
-  }
-
-  @Override protected boolean isStoppingConditionReached() {
-    return evaluations >= maxEvaluations ;
-  }
-
-  @Override protected List<S> createInitialPopulation() {
-    List<S> population = new ArrayList<>(populationSize);
-    for (int i = 0; i < populationSize; i++) {
-      S newIndividual = problem.createSolution();
-      population.add(newIndividual);
-    }
-    return population;
-  }
-
-  @Override protected List<S> evaluatePopulation(List<S> population) {
-    population = evaluator.evaluate(population, problem);
-
-    return population;
-  }
-
-  @Override protected List<S> selection(List<S> population) {
-    List<S> matingPopulation = new ArrayList<>(populationSize) ;
-
-    for (S solution : population) {
-      archive.add(solution) ;
+        archive = new AdaptiveGridArchiveI<>(this.archiveSize, this.biSections, problem.getNumberOfObjectives());
     }
 
-    while (matingPopulation.size() < populationSize) {
-      S solution = selectionOperator.execute(archive) ;
-
-      matingPopulation.add(solution);
+    @Override
+    protected void initProgress() {
+        evaluations = populationSize;
     }
 
-    return matingPopulation ;
-  }
-
-  @Override protected List<S> reproduction(List<S> population) {
-    List<S> offspringPopulation = new ArrayList<>(populationSize);
-    for (int i = 0; i < populationSize; i+=2) {
-      List<S> parents = new ArrayList<>(2);
-      parents.add(population.get(i));
-      parents.add(population.get(i + 1));
-
-      List<S> offspring = crossoverOperator.execute(parents);
-
-      mutationOperator.execute(offspring.get(0));
-
-      offspringPopulation.add(offspring.get(0));
-    }
-    return offspringPopulation;
-  }
-
-  @Override protected List<S> replacement(List<S> population, List<S> offspringPopulation) {
-    for (S solution : offspringPopulation) {
-      archive.add(solution) ;
+    @Override
+    protected void updateProgress() {
+        evaluations += populationSize;
     }
 
-    return Collections.emptyList();
-  }
+    @Override
+    protected boolean isStoppingConditionReached() {
+        return evaluations >= maxEvaluations;
+    }
 
-  @Override public List<S> getResult() {
-    return archive.getSolutionList();
-  }
+    @Override
+    protected List<S> createInitialPopulation() {
+        List<S> population = new ArrayList<>(populationSize);
+        for (int i = 0; i < populationSize; i++) {
+            S newIndividual = problem.createSolution();
+            population.add(newIndividual);
+        }
+        return population;
+    }
+
+    @Override
+    protected List<S> evaluatePopulation(List<S> population) {
+        population = evaluator.evaluate(population, problem);
+
+        return population;
+    }
+
+    @Override
+    protected List<S> selection(List<S> population) {
+        List<S> matingPopulation = new ArrayList<>(populationSize);
+
+        for (S solution : population) {
+            archive.add(solution);
+        }
+
+        while (matingPopulation.size() < populationSize) {
+            S solution = selectionOperator.execute(archive);
+
+            matingPopulation.add(solution);
+        }
+
+        return matingPopulation;
+    }
+
+    @Override
+    protected List<S> reproduction(List<S> population) {
+        List<S> offspringPopulation = new ArrayList<>(populationSize);
+        for (int i = 0; i < populationSize; i += 2) {
+            List<S> parents = new ArrayList<>(2);
+            parents.add(population.get(i));
+            parents.add(population.get(i + 1));
+
+            List<S> offspring = crossoverOperator.execute(parents);
+
+            mutationOperator.execute(offspring.get(0));
+
+            offspringPopulation.add(offspring.get(0));
+        }
+        return offspringPopulation;
+    }
+
+    @Override
+    protected List<S> replacement(List<S> population, List<S> offspringPopulation) {
+        for (S solution : offspringPopulation) {
+            archive.add(solution);
+        }
+
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<S> getResult() {
+        return archive.getSolutionList();
+    }
 }

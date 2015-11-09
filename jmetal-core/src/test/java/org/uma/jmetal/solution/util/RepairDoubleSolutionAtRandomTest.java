@@ -25,37 +25,38 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * @version 1.0
  */
 public class RepairDoubleSolutionAtRandomTest {
-  private static final double EPSILON = 0.0000000000001;
-  private RepairDoubleSolution repair;
+    private static final double EPSILON = 0.0000000000001;
+    private RepairDoubleSolution repair;
 
-  @Before public void setup() {
-    repair = new RepairDoubleSolutionAtRandom();
-  }
+    @Before
+    public void setup() {
+        repair = new RepairDoubleSolutionAtRandom();
+    }
 
-  @Test(expected = JMetalException.class)
-  public void shouldRRepairDoubleSolutionAtRandomRaiseAnExceptionIfTheBoundsAreIncorrect() {
-    repair.repairSolutionVariableValue(0.0, 1.0, -1.0);
-  }
+    @Test(expected = JMetalException.class)
+    public void shouldRRepairDoubleSolutionAtRandomRaiseAnExceptionIfTheBoundsAreIncorrect() {
+        repair.repairSolutionVariableValue(0.0, 1.0, -1.0);
+    }
 
-  @Test
-  public void shouldRRepairDoubleSolutionAtRandomAssignARandomValueIfValueIsLessThanTheLowerBound() {
-    double lowerBound = -1.0;
-    double upperBound = 1.0;
-    assertThat(repair.repairSolutionVariableValue(-3, lowerBound, upperBound),
-        Matchers.lessThanOrEqualTo(upperBound));
+    @Test
+    public void shouldRRepairDoubleSolutionAtRandomAssignARandomValueIfValueIsLessThanTheLowerBound() {
+        double lowerBound = -1.0;
+        double upperBound = 1.0;
+        assertThat(repair.repairSolutionVariableValue(-3, lowerBound, upperBound),
+                Matchers.lessThanOrEqualTo(upperBound));
 
-    assertThat(repair.repairSolutionVariableValue(-3, lowerBound, upperBound),
-        Matchers.greaterThanOrEqualTo(lowerBound));
-  }
+        assertThat(repair.repairSolutionVariableValue(-3, lowerBound, upperBound),
+                Matchers.greaterThanOrEqualTo(lowerBound));
+    }
 
-  @Test
-  public void shouldRRepairDoubleSolutionAtRandomAssignARandomValueIfValueIsGreaterThanTheUpperBound() {
-    double lowerBound = -1.0;
-    double upperBound = 1.0;
-    assertThat(repair.repairSolutionVariableValue(4, lowerBound, upperBound),
-        Matchers.lessThanOrEqualTo(upperBound));
+    @Test
+    public void shouldRRepairDoubleSolutionAtRandomAssignARandomValueIfValueIsGreaterThanTheUpperBound() {
+        double lowerBound = -1.0;
+        double upperBound = 1.0;
+        assertThat(repair.repairSolutionVariableValue(4, lowerBound, upperBound),
+                Matchers.lessThanOrEqualTo(upperBound));
 
-    assertThat(repair.repairSolutionVariableValue(4, lowerBound, upperBound),
-        Matchers.greaterThanOrEqualTo(lowerBound));
-  }
+        assertThat(repair.repairSolutionVariableValue(4, lowerBound, upperBound),
+                Matchers.greaterThanOrEqualTo(lowerBound));
+    }
 }

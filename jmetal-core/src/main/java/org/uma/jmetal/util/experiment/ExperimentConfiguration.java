@@ -29,56 +29,58 @@ import java.util.List;
 
 /**
  * Created by Antonio J. Nebro on 17/07/14.
- * 
+ * <p/>
  * Class for describing the configuration of a jMetal experiment
  */
 public class ExperimentConfiguration<S extends Solution<?>> {
-	private String experimentName;
-	private List<Algorithm<?>> algorithmList;
-	private List<Problem<S>> problemList;
-	private String experimentBaseDirectory;
+    private String experimentName;
+    private List<Algorithm<?>> algorithmList;
+    private List<Problem<S>> problemList;
+    private String experimentBaseDirectory;
 
-	private String outputParetoFrontFileName;
-	private String outputParetoSetFileName;
-	private int independentRuns;
+    private String outputParetoFrontFileName;
+    private String outputParetoSetFileName;
+    private int independentRuns;
 
-	/** Constructor */
-	public ExperimentConfiguration(ExperimentConfigurationBuilder<S> builder) {
-		experimentName = builder.getExperimentName() ;
-    this.experimentBaseDirectory = builder.getExperimentBaseDirectory() ;
-    this.algorithmList = builder.getAlgorithmList() ;
-    this.problemList = builder.getProblemList() ;
-    this.independentRuns = builder.getIndependentRuns() ;
-    this.outputParetoFrontFileName = builder.getOutputParetoFrontFileName() ;
-    this.outputParetoSetFileName = builder.getOutputParetoSetFileName() ;
-  }
+    /**
+     * Constructor
+     */
+    public ExperimentConfiguration(ExperimentConfigurationBuilder<S> builder) {
+        experimentName = builder.getExperimentName();
+        this.experimentBaseDirectory = builder.getExperimentBaseDirectory();
+        this.algorithmList = builder.getAlgorithmList();
+        this.problemList = builder.getProblemList();
+        this.independentRuns = builder.getIndependentRuns();
+        this.outputParetoFrontFileName = builder.getOutputParetoFrontFileName();
+        this.outputParetoSetFileName = builder.getOutputParetoSetFileName();
+    }
 
-  /* Getters */
-  public String getExperimentName() {
-    return experimentName;
-  }
+    /* Getters */
+    public String getExperimentName() {
+        return experimentName;
+    }
 
-  public List<Algorithm<?>> getAlgorithmList() {
-    return algorithmList;
-  }
+    public List<Algorithm<?>> getAlgorithmList() {
+        return algorithmList;
+    }
 
-  public List<Problem<S>> getProblemList() {
-    return problemList;
-  }
+    public List<Problem<S>> getProblemList() {
+        return problemList;
+    }
 
-  public String getExperimentBaseDirectory() {
-    return experimentBaseDirectory;
-  }
+    public String getExperimentBaseDirectory() {
+        return experimentBaseDirectory;
+    }
 
-  public String getOutputParetoFrontFileName() {
-    return outputParetoFrontFileName;
-  }
+    public String getOutputParetoFrontFileName() {
+        return outputParetoFrontFileName;
+    }
 
-  public String getOutputParetoSetFileName() {
-    return outputParetoSetFileName;
-  }
+    public String getOutputParetoSetFileName() {
+        return outputParetoSetFileName;
+    }
 
-  public int getIndependentRuns() {
-    return independentRuns;
-  }
+    public int getIndependentRuns() {
+        return independentRuns;
+    }
 }

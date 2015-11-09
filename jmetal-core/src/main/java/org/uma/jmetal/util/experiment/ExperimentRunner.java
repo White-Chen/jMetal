@@ -26,19 +26,19 @@ import org.uma.jmetal.util.JMetalException;
 import java.io.IOException;
 
 public class ExperimentRunner {
-  public static void main(String[] args) throws JMetalException, IOException {
-    ExperimentConfiguration<?> configuration = new ExperimentConfigurationBuilder<Solution<?>>("Experiment")
-      //.setAlgorithmList(Arrays.asList("NSGAII", "SMPSO", "MOCell", "GDE3"))
-      //.setProblemList(Arrays.asList("ZDT1", "ZDT2", "ZDT3", "ZDT4", "ZDT6"))
-      .setExperimentBaseDirectory("/Users/antelverde/Softw/jMetal/jMetalGitHub/pruebas")
-      .setOutputParetoFrontFileName("FUN")
-      .setOutputParetoSetFileName("VAR")
-      .setIndependentRuns(4)
-      .build() ;
+    public static void main(String[] args) throws JMetalException, IOException {
+        ExperimentConfiguration<?> configuration = new ExperimentConfigurationBuilder<Solution<?>>("Experiment")
+                //.setAlgorithmList(Arrays.asList("NSGAII", "SMPSO", "MOCell", "GDE3"))
+                //.setProblemList(Arrays.asList("ZDT1", "ZDT2", "ZDT3", "ZDT4", "ZDT6"))
+                .setExperimentBaseDirectory("/Users/antelverde/Softw/jMetal/jMetalGitHub/pruebas")
+                .setOutputParetoFrontFileName("FUN")
+                .setOutputParetoSetFileName("VAR")
+                .setIndependentRuns(4)
+                .build();
 
-    ExperimentalStudy study = new ExperimentalStudy.Builder(configuration)
-      .build() ;
+        ExperimentalStudy study = new ExperimentalStudy.Builder(configuration)
+                .build();
 
-    study.run();
-  }
+        study.run();
+    }
 }

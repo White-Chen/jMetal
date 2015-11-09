@@ -23,5 +23,5 @@ import java.util.List;
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public interface Neighborhood<S extends Solution<?>> {
-  public List<S> getNeighbors(List<S> solutionList, int solutionIndex) ;
+    public List<S> getNeighbors(List<S> solutionList, int solutionIndex);
 }

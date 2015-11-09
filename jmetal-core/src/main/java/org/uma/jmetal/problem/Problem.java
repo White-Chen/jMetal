@@ -20,18 +20,21 @@ import java.io.Serializable;
 /**
  * Interface representing a multi-objective optimization problem
  *
- * @author Antonio J. Nebro <antonio@lcc.uma.es>
- *
  * @param <S> Encoding
+ * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public interface Problem<S extends Solution<?>> extends Serializable {
-  /* Getters */
-  public int getNumberOfVariables() ;
-  public int getNumberOfObjectives() ;
-  public int getNumberOfConstraints() ;
-  public String getName() ;
+    /* Getters */
+    public int getNumberOfVariables();
 
-  /* Methods */
-  public void evaluate(S solution) ;
-  public S createSolution() ;
+    public int getNumberOfObjectives();
+
+    public int getNumberOfConstraints();
+
+    public String getName();
+
+    /* Methods */
+    public void evaluate(S solution);
+
+    public S createSolution();
 }

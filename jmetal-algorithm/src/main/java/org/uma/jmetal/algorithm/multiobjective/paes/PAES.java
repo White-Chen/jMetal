@@ -17,7 +17,7 @@ import org.uma.jmetal.algorithm.impl.AbstractEvolutionStrategy;
 import org.uma.jmetal.operator.MutationOperator;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
-import org.uma.jmetal.util.archive.impl.AdaptiveGridArchive;
+import org.uma.jmetal.util.archive.impl.AdaptiveGridArchiveI;
 import org.uma.jmetal.util.comparator.DominanceComparator;
 
 import java.util.ArrayList;
@@ -28,137 +28,146 @@ import java.util.List;
  * @author Antonio J. Nebro
  * @author Juan J. Durillo
  * @version 1.0
- *
- * This class implements the PAES algorithm.
+ *          <p/>
+ *          This class implements the PAES algorithm.
  */
 public class PAES<S extends Solution<?>> extends AbstractEvolutionStrategy<S, List<S>> {
-  protected Problem<S> problem;
+    protected Problem<S> problem;
 
-  protected int archiveSize;
-  protected int maxEvaluations;
-  protected int biSections;
-  protected int evaluations;
+    protected int archiveSize;
+    protected int maxEvaluations;
+    protected int biSections;
+    protected int evaluations;
 
-  protected AdaptiveGridArchive<S> archive;
-  protected Comparator<S> comparator;
+    protected AdaptiveGridArchiveI<S> archive;
+    protected Comparator<S> comparator;
 
-  /**
-   * Constructor
-   */
-  public PAES(Problem<S> problem, int archiveSize, int maxEvaluations, int biSections,
-      MutationOperator<S> mutationOperator) {
-    this.problem = problem;
-    this.archiveSize = archiveSize;
-    this.maxEvaluations = maxEvaluations;
-    this.biSections = biSections;
-    this.mutationOperator = mutationOperator;
+    /**
+     * Constructor
+     */
+    public PAES(Problem<S> problem, int archiveSize, int maxEvaluations, int biSections,
+                MutationOperator<S> mutationOperator) {
+        this.problem = problem;
+        this.archiveSize = archiveSize;
+        this.maxEvaluations = maxEvaluations;
+        this.biSections = biSections;
+        this.mutationOperator = mutationOperator;
 
-    archive = new AdaptiveGridArchive<S>(archiveSize, biSections, problem.getNumberOfObjectives());
-    comparator = new DominanceComparator<S>();
-  }
-
-  /* Getters */
-  public int getArchiveSize() {
-    return archiveSize;
-  }
-
-  public int getMaxEvaluations() {
-    return maxEvaluations;
-  }
-
-  public int getBiSections() {
-    return biSections;
-  }
-
-  public MutationOperator<S> getMutationOperator() {
-    return mutationOperator;
-  }
-
-  @Override protected void initProgress() {
-    evaluations = 0;
-  }
-
-  @Override protected void updateProgress() {
-    evaluations++;
-  }
-
-  @Override protected boolean isStoppingConditionReached() {
-    return evaluations >= maxEvaluations;
-  }
-
-  @Override protected List<S> createInitialPopulation() {
-    List<S> solutionList = new ArrayList<>(1);
-    solutionList.add(problem.createSolution());
-    return solutionList;
-  }
-
-  @Override protected List<S> evaluatePopulation(List<S> population) {
-    problem.evaluate(population.get(0));
-    return population;
-  }
-
-  @Override protected List<S> selection(List<S> population) {
-    return population;
-  }
-
-  @SuppressWarnings("unchecked")
-  @Override protected List<S> reproduction(List<S> population) {
-    S mutatedSolution = (S)population.get(0).copy();
-    mutationOperator.execute(mutatedSolution);
-
-    List<S> mutationSolutionList = new ArrayList<>(1);
-    mutationSolutionList.add(mutatedSolution);
-    return mutationSolutionList;
-  }
-
-  @SuppressWarnings("unchecked")
-  @Override protected List<S> replacement(List<S> population, List<S> offspringPopulation) {
-    S current = population.get(0);
-    S mutatedSolution = offspringPopulation.get(0);
-
-    int flag = comparator.compare(current, mutatedSolution);
-    if (flag == 1) {
-      current = (S)mutatedSolution.copy();
-      archive.add(mutatedSolution);
-    } else if (flag == 0) {
-      if (archive.add(mutatedSolution)) {
-        population.set(0, test(current, mutatedSolution, archive));
-      }
+        archive = new AdaptiveGridArchiveI<S>(archiveSize, biSections, problem.getNumberOfObjectives());
+        comparator = new DominanceComparator<S>();
     }
 
-    population.set(0, current);
-    return population;
-  }
-
-  @Override public List<S> getResult() {
-    return archive.getSolutionList();
-  }
-
-  /**
-   * Tests two solutions to determine which one becomes be the guide of PAES
-   * algorithm
-   *
-   * @param solution        The actual guide of PAES
-   * @param mutatedSolution A candidate guide
-   */
-  @SuppressWarnings("unchecked")
-  public S test(S solution, S mutatedSolution, AdaptiveGridArchive<S> archive) {
-    int originalLocation = archive.getGrid().location(solution);
-    int mutatedLocation = archive.getGrid().location(mutatedSolution);
-
-    if (originalLocation == -1) {
-      return (S)mutatedSolution.copy();
+    /* Getters */
+    public int getArchiveSize() {
+        return archiveSize;
     }
 
-    if (mutatedLocation == -1) {
-      return (S)solution.copy();
+    public int getMaxEvaluations() {
+        return maxEvaluations;
     }
 
-    if (archive.getGrid().getLocationDensity(mutatedLocation) < archive.getGrid()
-        .getLocationDensity(originalLocation)) {
-      return (S)mutatedSolution.copy();
+    public int getBiSections() {
+        return biSections;
     }
 
-    return (S)solution.copy();
-  }
+    public MutationOperator<S> getMutationOperator() {
+        return mutationOperator;
+    }
+
+    @Override
+    protected void initProgress() {
+        evaluations = 0;
+    }
+
+    @Override
+    protected void updateProgress() {
+        evaluations++;
+    }
+
+    @Override
+    protected boolean isStoppingConditionReached() {
+        return evaluations >= maxEvaluations;
+    }
+
+    @Override
+    protected List<S> createInitialPopulation() {
+        List<S> solutionList = new ArrayList<>(1);
+        solutionList.add(problem.createSolution());
+        return solutionList;
+    }
+
+    @Override
+    protected List<S> evaluatePopulation(List<S> population) {
+        problem.evaluate(population.get(0));
+        return population;
+    }
+
+    @Override
+    protected List<S> selection(List<S> population) {
+        return population;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected List<S> reproduction(List<S> population) {
+        S mutatedSolution = (S) population.get(0).copy();
+        mutationOperator.execute(mutatedSolution);
+
+        List<S> mutationSolutionList = new ArrayList<>(1);
+        mutationSolutionList.add(mutatedSolution);
+        return mutationSolutionList;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected List<S> replacement(List<S> population, List<S> offspringPopulation) {
+        S current = population.get(0);
+        S mutatedSolution = offspringPopulation.get(0);
+
+        int flag = comparator.compare(current, mutatedSolution);
+        if (flag == 1) {
+            current = (S) mutatedSolution.copy();
+            archive.add(mutatedSolution);
+        } else if (flag == 0) {
+            if (archive.add(mutatedSolution)) {
+                population.set(0, test(current, mutatedSolution, archive));
+            }
+        }
+
+        population.set(0, current);
+        return population;
+    }
+
+    @Override
+    public List<S> getResult() {
+        return archive.getSolutionList();
+    }
+
+    /**
+     * Tests two solutions to determine which one becomes be the guide of PAES
+     * algorithm
+     *
+     * @param solution        The actual guide of PAES
+     * @param mutatedSolution A candidate guide
+     */
+    @SuppressWarnings("unchecked")
+    public S test(S solution, S mutatedSolution, AdaptiveGridArchiveI<S> archive) {
+        int originalLocation = archive.getGrid().location(solution);
+        int mutatedLocation = archive.getGrid().location(mutatedSolution);
+
+        if (originalLocation == -1) {
+            return (S) mutatedSolution.copy();
+        }
+
+        if (mutatedLocation == -1) {
+            return (S) solution.copy();
+        }
+
+        if (archive.getGrid().getLocationDensity(mutatedLocation) < archive.getGrid()
+                .getLocationDensity(originalLocation)) {
+            return (S) mutatedSolution.copy();
+        }
+
+        return (S) solution.copy();
+    }
 }

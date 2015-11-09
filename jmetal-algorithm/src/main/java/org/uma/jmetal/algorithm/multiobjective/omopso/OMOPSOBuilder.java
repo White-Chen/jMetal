@@ -27,79 +27,82 @@ import org.uma.jmetal.operator.impl.mutation.NonUniformMutation;
 import org.uma.jmetal.operator.impl.mutation.UniformMutation;
 import org.uma.jmetal.problem.DoubleProblem;
 import org.uma.jmetal.solution.DoubleSolution;
-import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
 import org.uma.jmetal.util.AlgorithmBuilder;
+import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
 
-/** Class implementing the OMOPSO algorithm */
+/**
+ * Class implementing the OMOPSO algorithm
+ */
 public class OMOPSOBuilder implements AlgorithmBuilder<OMOPSO> {
-  protected DoubleProblem problem;
-  protected SolutionListEvaluator<DoubleSolution> evaluator;
+    protected DoubleProblem problem;
+    protected SolutionListEvaluator<DoubleSolution> evaluator;
 
-  private int swarmSize = 100 ;
-  private int archiveSize = 100 ;
-  private int maxIterations = 25000 ;
+    private int swarmSize = 100;
+    private int archiveSize = 100;
+    private int maxIterations = 300;
+    private int maxEvaluations = 30000;
 
-  private UniformMutation uniformMutation ;
-  private NonUniformMutation nonUniformMutation ;
+    private UniformMutation uniformMutation;
+    private NonUniformMutation nonUniformMutation;
 
-  public OMOPSOBuilder(DoubleProblem problem, SolutionListEvaluator<DoubleSolution> evaluator) {
-    this.evaluator = evaluator ;
-    this.problem = problem ;
-  }
+    public OMOPSOBuilder(DoubleProblem problem, SolutionListEvaluator<DoubleSolution> evaluator) {
+        this.evaluator = evaluator;
+        this.problem = problem;
+    }
 
-  public OMOPSOBuilder setSwarmSize(int swarmSize) {
-    this.swarmSize = swarmSize ;
+    /* Getters */
+    public int getArchiveSize() {
+        return archiveSize;
+    }
 
-    return this ;
-  }
+    public OMOPSOBuilder setArchiveSize(int archiveSize) {
+        this.archiveSize = archiveSize;
 
-  public OMOPSOBuilder setArchiveSize(int archiveSize) {
-    this.archiveSize = archiveSize ;
+        return this;
+    }
 
-    return this ;
-  }
+    public int getSwarmSize() {
+        return swarmSize;
+    }
 
-  public OMOPSOBuilder setMaxIterations(int maxIterations) {
-    this.maxIterations = maxIterations ;
+    public OMOPSOBuilder setSwarmSize(int swarmSize) {
+        this.swarmSize = swarmSize;
 
-    return this ;
-  }
+        return this;
+    }
 
-  public OMOPSOBuilder setUniformMutation(MutationOperator<DoubleSolution> uniformMutation) {
-    this.uniformMutation = (UniformMutation)uniformMutation ;
+    public int getMaxIterations() {
+        return maxIterations;
+    }
 
-    return this ;
-  }
+    public OMOPSOBuilder setMaxIterations(int maxIterations) {
+        this.maxIterations = maxIterations;
 
-  public OMOPSOBuilder setNonUniformMutation(MutationOperator<DoubleSolution> nonUniformMutation) {
-    this.nonUniformMutation = (NonUniformMutation)nonUniformMutation ;
+        return this;
+    }
 
-    return this ;
-  }
+    public UniformMutation getUniformMutation() {
+        return uniformMutation;
+    }
 
-  /* Getters */
-  public int getArchiveSize() {
-    return archiveSize;
-  }
+    public OMOPSOBuilder setUniformMutation(MutationOperator<DoubleSolution> uniformMutation) {
+        this.uniformMutation = (UniformMutation) uniformMutation;
 
-  public int getSwarmSize() {
-    return swarmSize;
-  }
+        return this;
+    }
 
-  public int getMaxIterations() {
-    return maxIterations;
-  }
+    public NonUniformMutation getNonUniformMutation() {
+        return nonUniformMutation;
+    }
 
-  public UniformMutation getUniformMutation() {
-    return uniformMutation;
-  }
+    public OMOPSOBuilder setNonUniformMutation(MutationOperator<DoubleSolution> nonUniformMutation) {
+        this.nonUniformMutation = (NonUniformMutation) nonUniformMutation;
 
-  public NonUniformMutation getNonUniformMutation() {
-    return nonUniformMutation;
-  }
+        return this;
+    }
 
-  public OMOPSO build() {
-    return new OMOPSO(problem, evaluator, swarmSize, maxIterations, archiveSize, uniformMutation,
-        nonUniformMutation) ;
-  }
+    public OMOPSO build() {
+        return new OMOPSO(problem, evaluator, swarmSize, maxIterations, archiveSize, uniformMutation,
+                nonUniformMutation, maxEvaluations);
+    }
 }

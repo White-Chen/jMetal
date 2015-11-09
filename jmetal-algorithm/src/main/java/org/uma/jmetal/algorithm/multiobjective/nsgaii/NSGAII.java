@@ -21,128 +21,136 @@ import java.util.List;
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public class NSGAII<S extends Solution<?>> extends AbstractGeneticAlgorithm<S, List<S>> {
-  protected final int maxEvaluations;
+    protected final int maxEvaluations;
 
-  protected final Problem<S> problem;
+    protected final Problem<S> problem;
 
-  protected final SolutionListEvaluator<S> evaluator;
+    protected final SolutionListEvaluator<S> evaluator;
 
-  protected int evaluations;
+    protected int evaluations;
 
-  /**
-   * Constructor
-   */
-  public NSGAII(Problem<S> problem, int maxEvaluations, int populationSize,
-      CrossoverOperator<S> crossoverOperator, MutationOperator<S> mutationOperator,
-      SelectionOperator<List<S>, S> selectionOperator, SolutionListEvaluator<S> evaluator) {
-    super() ;
-    this.problem = problem;
-    this.maxEvaluations = maxEvaluations;
-    setMaxPopulationSize(populationSize); ;
+    /**
+     * Constructor
+     */
+    public NSGAII(Problem<S> problem, int maxEvaluations, int populationSize,
+                  CrossoverOperator<S> crossoverOperator, MutationOperator<S> mutationOperator,
+                  SelectionOperator<List<S>, S> selectionOperator, SolutionListEvaluator<S> evaluator) {
+        super();
+        this.problem = problem;
+        this.maxEvaluations = maxEvaluations;
+        setMaxPopulationSize(populationSize);
+        ;
 
-    this.crossoverOperator = crossoverOperator;
-    this.mutationOperator = mutationOperator;
-    this.selectionOperator = selectionOperator;
+        this.crossoverOperator = crossoverOperator;
+        this.mutationOperator = mutationOperator;
+        this.selectionOperator = selectionOperator;
 
-    this.evaluator = evaluator;
-  }
-
-  @Override protected void initProgress() {
-    evaluations = getMaxPopulationSize();
-  }
-
-  @Override protected void updateProgress() {
-    evaluations += getMaxPopulationSize() ;
-  }
-
-  @Override protected boolean isStoppingConditionReached() {
-    return evaluations >= maxEvaluations;
-  }
-
-  @Override protected List<S> createInitialPopulation() {
-    List<S> population = new ArrayList<>(getMaxPopulationSize());
-    for (int i = 0; i < getMaxPopulationSize(); i++) {
-      S newIndividual = problem.createSolution();
-      population.add(newIndividual);
-    }
-    return population;
-  }
-
-  @Override protected List<S> evaluatePopulation(List<S> population) {
-    population = evaluator.evaluate(population, problem);
-
-    return population;
-  }
-
-  @Override protected List<S> replacement(List<S> population, List<S> offspringPopulation) {
-    List<S> jointPopulation = new ArrayList<>();
-    jointPopulation.addAll(population);
-    jointPopulation.addAll(offspringPopulation);
-
-    Ranking<S> ranking = computeRanking(jointPopulation);
-
-    return crowdingDistanceSelection(ranking);
-  }
-
-  @Override public List<S> getResult() {
-    return getNonDominatedSolutions(getPopulation());
-  }
-
-  protected Ranking<S> computeRanking(List<S> solutionList) {
-    Ranking<S> ranking = new DominanceRanking<S>();
-    ranking.computeRanking(solutionList);
-
-    return ranking;
-  }
-
-  protected List<S> crowdingDistanceSelection(Ranking<S> ranking) {
-    CrowdingDistance<S> crowdingDistance = new CrowdingDistance<S>();
-    List<S> population = new ArrayList<>(getMaxPopulationSize());
-    int rankingIndex = 0;
-    while (populationIsNotFull(population)) {
-      if (subfrontFillsIntoThePopulation(ranking, rankingIndex, population)) {
-        addRankedSolutionsToPopulation(ranking, rankingIndex, population);
-        rankingIndex++;
-      } else {
-        crowdingDistance.computeDensityEstimator(ranking.getSubfront(rankingIndex));
-        addLastRankedSolutionsToPopulation(ranking, rankingIndex, population);
-      }
+        this.evaluator = evaluator;
     }
 
-    return population;
-  }
-
-  protected boolean populationIsNotFull(List<S> population) {
-    return population.size() < getMaxPopulationSize();
-  }
-
-  protected boolean subfrontFillsIntoThePopulation(Ranking<S> ranking, int rank, List<S> population) {
-    return ranking.getSubfront(rank).size() < (getMaxPopulationSize() - population.size());
-  }
-
-  protected void addRankedSolutionsToPopulation(Ranking<S> ranking, int rank, List<S> population) {
-    List<S> front;
-
-    front = ranking.getSubfront(rank);
-
-    for (S solution : front) {
-      population.add(solution);
+    @Override
+    protected void initProgress() {
+        evaluations = getMaxPopulationSize();
     }
-  }
 
-  protected void addLastRankedSolutionsToPopulation(Ranking<S> ranking, int rank, List<S> population) {
-    List<S> currentRankedFront = ranking.getSubfront(rank);
-
-    Collections.sort(currentRankedFront, new CrowdingDistanceComparator<S>());
-
-    int i = 0;
-    while (population.size() < getMaxPopulationSize()) {
-      population.add(currentRankedFront.get(i));
-      i++;
+    @Override
+    protected void updateProgress() {
+        evaluations += getMaxPopulationSize();
     }
-  }
 
-  protected List<S> getNonDominatedSolutions(List<S> solutionList) {
-    return SolutionListUtils.getNondominatedSolutions(solutionList);
-  }
+    @Override
+    protected boolean isStoppingConditionReached() {
+        return evaluations >= maxEvaluations;
+    }
+
+    @Override
+    protected List<S> createInitialPopulation() {
+        List<S> population = new ArrayList<>(getMaxPopulationSize());
+        for (int i = 0; i < getMaxPopulationSize(); i++) {
+            S newIndividual = problem.createSolution();
+            population.add(newIndividual);
+        }
+        return population;
+    }
+
+    @Override
+    protected List<S> evaluatePopulation(List<S> population) {
+        population = evaluator.evaluate(population, problem);
+
+        return population;
+    }
+
+    @Override
+    protected List<S> replacement(List<S> population, List<S> offspringPopulation) {
+        List<S> jointPopulation = new ArrayList<>();
+        jointPopulation.addAll(population);
+        jointPopulation.addAll(offspringPopulation);
+
+        Ranking<S> ranking = computeRanking(jointPopulation);
+
+        return crowdingDistanceSelection(ranking);
+    }
+
+    @Override
+    public List<S> getResult() {
+        return getNonDominatedSolutions(getPopulation());
+    }
+
+    protected Ranking<S> computeRanking(List<S> solutionList) {
+        Ranking<S> ranking = new DominanceRanking<S>();
+        ranking.computeRanking(solutionList);
+
+        return ranking;
+    }
+
+    protected List<S> crowdingDistanceSelection(Ranking<S> ranking) {
+        CrowdingDistance<S> crowdingDistance = new CrowdingDistance<S>();
+        List<S> population = new ArrayList<>(getMaxPopulationSize());
+        int rankingIndex = 0;
+        while (populationIsNotFull(population)) {
+            if (subfrontFillsIntoThePopulation(ranking, rankingIndex, population)) {
+                addRankedSolutionsToPopulation(ranking, rankingIndex, population);
+                rankingIndex++;
+            } else {
+                crowdingDistance.computeDensityEstimator(ranking.getSubfront(rankingIndex));
+                addLastRankedSolutionsToPopulation(ranking, rankingIndex, population);
+            }
+        }
+
+        return population;
+    }
+
+    protected boolean populationIsNotFull(List<S> population) {
+        return population.size() < getMaxPopulationSize();
+    }
+
+    protected boolean subfrontFillsIntoThePopulation(Ranking<S> ranking, int rank, List<S> population) {
+        return ranking.getSubfront(rank).size() < (getMaxPopulationSize() - population.size());
+    }
+
+    protected void addRankedSolutionsToPopulation(Ranking<S> ranking, int rank, List<S> population) {
+        List<S> front;
+
+        front = ranking.getSubfront(rank);
+
+        for (S solution : front) {
+            population.add(solution);
+        }
+    }
+
+    protected void addLastRankedSolutionsToPopulation(Ranking<S> ranking, int rank, List<S> population) {
+        List<S> currentRankedFront = ranking.getSubfront(rank);
+
+        Collections.sort(currentRankedFront, new CrowdingDistanceComparator<S>());
+
+        int i = 0;
+        while (population.size() < getMaxPopulationSize()) {
+            population.add(currentRankedFront.get(i));
+            i++;
+        }
+    }
+
+    protected List<S> getNonDominatedSolutions(List<S> solutionList) {
+        return SolutionListUtils.getNondominatedSolutions(solutionList);
+    }
 }

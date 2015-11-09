@@ -26,64 +26,64 @@ import static org.junit.Assert.assertTrue;
  * Created by ajnebro on 11/6/15.
  */
 public class ABYSSIT {
-  Algorithm<List<DoubleSolution>> algorithm;
-  DoubleProblem problem ;
-  CrossoverOperator<DoubleSolution> crossover;
-  MutationOperator<DoubleSolution> mutation;
-  LocalSearchOperator<DoubleSolution> localSearchOperator ;
-  Archive<DoubleSolution> archive ;
+    Algorithm<List<DoubleSolution>> algorithm;
+    DoubleProblem problem;
+    CrossoverOperator<DoubleSolution> crossover;
+    MutationOperator<DoubleSolution> mutation;
+    LocalSearchOperator<DoubleSolution> localSearchOperator;
+    Archive<DoubleSolution> archive;
 
-  @Before
-  public void setup() {
-    problem = new ZDT4() ;
+    @Before
+    public void setup() {
+        problem = new ZDT4();
 
-    double crossoverProbability = 1.0 ;
-    double crossoverDistributionIndex = 20.0 ;
-    crossover = new SBXCrossover(crossoverProbability, crossoverDistributionIndex) ;
+        double crossoverProbability = 1.0;
+        double crossoverDistributionIndex = 20.0;
+        crossover = new SBXCrossover(crossoverProbability, crossoverDistributionIndex);
 
-    double mutationProbability = 1.0 / problem.getNumberOfVariables() ;
-    double mutationDistributionIndex = 20.0 ;
-    mutation = new PolynomialMutation(mutationProbability, mutationDistributionIndex) ;
+        double mutationProbability = 1.0 / problem.getNumberOfVariables();
+        double mutationDistributionIndex = 20.0;
+        mutation = new PolynomialMutation(mutationProbability, mutationDistributionIndex);
 
-    archive = new CrowdingDistanceArchive<>(100) ;
+        archive = new CrowdingDistanceArchive<>(100);
 
-    localSearchOperator = new ArchiveMutationLocalSearch<>(1, mutation, archive, problem) ;
-  }
+        localSearchOperator = new ArchiveMutationLocalSearch<>(1, mutation, archive, problem);
+    }
 
-  @Test
-  public void shouldTheAlgorithmReturnANumberOfSolutionsWhenSolvingASimpleProblem() throws Exception {
-    algorithm = new ABYSSBuilder(problem, archive)
-        .build();
+    @Test
+    public void shouldTheAlgorithmReturnANumberOfSolutionsWhenSolvingASimpleProblem() throws Exception {
+        algorithm = new ABYSSBuilder(problem, archive)
+                .build();
 
-    AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
-        .execute();
+        AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
+                .execute();
 
-    List<DoubleSolution> population = algorithm.getResult();
+        List<DoubleSolution> population = algorithm.getResult();
 
     /*
     Rationale: the default problem is ZDT4, and AbYSS, configured with standard settings, should
     return 100 solutions
     */
-    assertTrue(population.size() >= 98) ;
-  }
+        assertTrue(population.size() >= 98);
+    }
 
-  @Test
-  public void shouldTheHypervolumeHaveAMininumValue() throws Exception {
-    algorithm = new ABYSSBuilder(problem, archive)
-        .build();
+    @Test
+    public void shouldTheHypervolumeHaveAMininumValue() throws Exception {
+        algorithm = new ABYSSBuilder(problem, archive)
+                .build();
 
-    AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
-        .execute();
+        AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
+                .execute();
 
-    List<DoubleSolution> population = algorithm.getResult();
+        List<DoubleSolution> population = algorithm.getResult();
 
-    QualityIndicator<List<DoubleSolution>, Double> hypervolume = new Hypervolume<>("/referenceFronts/ZDT1.pf") ;
+        QualityIndicator<List<DoubleSolution>, Double> hypervolume = new Hypervolume<>("/referenceFronts/ZDT1.pf");
 
-    // Rationale: the default problem is ZDT1, and AbYSS, configured with standard settings, should
-    // return find a front with a hypervolume value higher than 0.64
+        // Rationale: the default problem is ZDT1, and AbYSS, configured with standard settings, should
+        // return find a front with a hypervolume value higher than 0.64
 
-    double hv = (Double)hypervolume.evaluate(population) ;
+        double hv = (Double) hypervolume.evaluate(population);
 
-    assertTrue(hv > 0.64) ;
-  }
+        assertTrue(hv > 0.64);
+    }
 }

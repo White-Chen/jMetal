@@ -28,105 +28,107 @@ import java.util.Comparator;
  *
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
-public class BasicLocalSearch<S extends Solution<?>> implements LocalSearchOperator<S>{
-  private Problem<S> problem;
-  private int improvementRounds ;
-  private Comparator<S> constraintComparator ;
-  private Comparator<S> comparator ;
+public class BasicLocalSearch<S extends Solution<?>> implements LocalSearchOperator<S> {
+    private Problem<S> problem;
+    private int improvementRounds;
+    private Comparator<S> constraintComparator;
+    private Comparator<S> comparator;
 
-  private MutationOperator<S> mutationOperator;
-  private int evaluations ;
-  private int numberOfImprovements ;
+    private MutationOperator<S> mutationOperator;
+    private int evaluations;
+    private int numberOfImprovements;
 
-  private JMetalRandom randomGenerator ;
+    private JMetalRandom randomGenerator;
 
-  private int numberOfNonComparableSolutions ;
-  /**
-   * Constructor.
-   * Creates a new local search object.
-   * @param improvementRounds number of iterations
-   * @param mutationOperator mutation operator
-   * @param comparator comparator to determine which solution is the best
-   * @param problem problem to resolve
+    private int numberOfNonComparableSolutions;
 
-   */
-  public BasicLocalSearch(int improvementRounds, MutationOperator<S> mutationOperator,
-      Comparator<S> comparator, Problem<S> problem){
-    this.problem=problem;
-    this.mutationOperator=mutationOperator;
-    this.improvementRounds=improvementRounds;
-    this.comparator  = comparator ;
-    constraintComparator = new OverallConstraintViolationComparator<S>();
+    /**
+     * Constructor.
+     * Creates a new local search object.
+     *
+     * @param improvementRounds number of iterations
+     * @param mutationOperator  mutation operator
+     * @param comparator        comparator to determine which solution is the best
+     * @param problem           problem to resolve
+     */
+    public BasicLocalSearch(int improvementRounds, MutationOperator<S> mutationOperator,
+                            Comparator<S> comparator, Problem<S> problem) {
+        this.problem = problem;
+        this.mutationOperator = mutationOperator;
+        this.improvementRounds = improvementRounds;
+        this.comparator = comparator;
+        constraintComparator = new OverallConstraintViolationComparator<S>();
 
-    randomGenerator = JMetalRandom.getInstance() ;
-    numberOfImprovements = 0 ;
-  }
-
-  /**
-   * Executes the local search.
-   * @param  solution The solution to improve
-   * @return An improved solution
-   */
-  @SuppressWarnings("unchecked")
-  public S execute(S solution) {
-    int i = 0;
-    int best ;
-    evaluations = 0;
-    numberOfNonComparableSolutions = 0 ;
-
-    int rounds = improvementRounds;
-
-    while (i < rounds) {
-      S mutatedSolution = mutationOperator.execute((S) solution.copy());
-      if (problem.getNumberOfConstraints() > 0) {
-
-        ((ConstrainedProblem<S>) problem).evaluateConstraints(mutatedSolution);
-        best = constraintComparator.compare(mutatedSolution, solution);
-        if (best == 0) {
-          problem.evaluate(mutatedSolution);
-          evaluations++;
-          best = comparator.compare(mutatedSolution, solution);
-        } else if (best == -1) {
-          problem.evaluate(mutatedSolution);
-          evaluations++;
-        }
-      } else {
-        problem.evaluate(mutatedSolution);
-        evaluations++;
-        best = comparator.compare(mutatedSolution, solution);
-      }
-
-      if (best == -1) {
-        solution = mutatedSolution;
-        numberOfImprovements ++ ;
-      }
-      else if (best == 1) {
-        ;
-      }
-      else {
-        numberOfNonComparableSolutions ++ ;
-
-        if (randomGenerator.nextDouble() < 0.5) {
-          solution = mutatedSolution ;
-        }
-      }
-      i++ ;
+        randomGenerator = JMetalRandom.getInstance();
+        numberOfImprovements = 0;
     }
-    return (S) solution.copy();
-  }
 
-  /**
-   * Returns the number of evaluations
-   */
-  public int getEvaluations() {
-    return evaluations;
-  }
+    /**
+     * Executes the local search.
+     *
+     * @param solution The solution to improve
+     * @return An improved solution
+     */
+    @SuppressWarnings("unchecked")
+    public S execute(S solution) {
+        int i = 0;
+        int best;
+        evaluations = 0;
+        numberOfNonComparableSolutions = 0;
 
-  @Override public int getNumberOfImprovements() {
-    return numberOfImprovements ;
-  }
+        int rounds = improvementRounds;
 
-  @Override public int getNumberOfNonComparableSolutions() {
-    return numberOfNonComparableSolutions ;
-  }
+        while (i < rounds) {
+            S mutatedSolution = mutationOperator.execute((S) solution.copy());
+            if (problem.getNumberOfConstraints() > 0) {
+
+                ((ConstrainedProblem<S>) problem).evaluateConstraints(mutatedSolution);
+                best = constraintComparator.compare(mutatedSolution, solution);
+                if (best == 0) {
+                    problem.evaluate(mutatedSolution);
+                    evaluations++;
+                    best = comparator.compare(mutatedSolution, solution);
+                } else if (best == -1) {
+                    problem.evaluate(mutatedSolution);
+                    evaluations++;
+                }
+            } else {
+                problem.evaluate(mutatedSolution);
+                evaluations++;
+                best = comparator.compare(mutatedSolution, solution);
+            }
+
+            if (best == -1) {
+                solution = mutatedSolution;
+                numberOfImprovements++;
+            } else if (best == 1) {
+                ;
+            } else {
+                numberOfNonComparableSolutions++;
+
+                if (randomGenerator.nextDouble() < 0.5) {
+                    solution = mutatedSolution;
+                }
+            }
+            i++;
+        }
+        return (S) solution.copy();
+    }
+
+    /**
+     * Returns the number of evaluations
+     */
+    public int getEvaluations() {
+        return evaluations;
+    }
+
+    @Override
+    public int getNumberOfImprovements() {
+        return numberOfImprovements;
+    }
+
+    @Override
+    public int getNumberOfNonComparableSolutions() {
+        return numberOfNonComparableSolutions;
+    }
 }

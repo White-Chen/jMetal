@@ -20,5 +20,5 @@ import org.uma.jmetal.solution.Solution;
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public interface BoundedArchive<S extends Solution<?>> extends Archive<S> {
-  public int getMaxSize() ;
+    public int getMaxSize();
 }

@@ -25,124 +25,126 @@ import java.util.Arrays;
  * @author Antonio J. Nebro
  */
 public class ArrayPoint implements Point {
-  private double[] point;
+    private double[] point;
 
-  /**
-   * Constructor
-   *
-   * @param dimensions Dimensions of the point
-   */
-  public ArrayPoint(int dimensions) {
-    point = new double[dimensions];
+    /**
+     * Constructor
+     *
+     * @param dimensions Dimensions of the point
+     */
+    public ArrayPoint(int dimensions) {
+        point = new double[dimensions];
 
-    for (int i = 0; i < dimensions; i++) {
-      point[i] = 0.0;
-    }
-  }
-
-
-  /**
-   * Copy constructor
-   *
-   * @param point
-   */
-  public ArrayPoint(Point point) {
-    if (point == null) {
-      throw new JMetalException("The point is null") ;
+        for (int i = 0; i < dimensions; i++) {
+            point[i] = 0.0;
+        }
     }
 
-    this.point = new double[point.getNumberOfDimensions()];
 
-    for (int i = 0; i < point.getNumberOfDimensions(); i++) {
-      this.point[i] = point.getDimensionValue(i);
-    }
-  }
+    /**
+     * Copy constructor
+     *
+     * @param point
+     */
+    public ArrayPoint(Point point) {
+        if (point == null) {
+            throw new JMetalException("The point is null");
+        }
 
-  /**
-   * Constructor from a solution
-   *
-   * @param solution
-   */
-  public ArrayPoint(Solution<?> solution) {
-    if (solution == null) {
-      throw new JMetalException("The solution is null") ;
-    }
+        this.point = new double[point.getNumberOfDimensions()];
 
-    int dimensions = solution.getNumberOfObjectives();
-    point = new double[dimensions];
-
-    for (int i = 0; i < dimensions; i++) {
-      point[i] = solution.getObjective(i);
-    }
-  }
-
-  /**
-   * Constructor from an array of double values
-   *
-   * @param point
-   */
-  public ArrayPoint(double[] point) {
-    if (point == null) {
-      throw new JMetalException("The array of values is null") ;
+        for (int i = 0; i < point.getNumberOfDimensions(); i++) {
+            this.point[i] = point.getDimensionValue(i);
+        }
     }
 
-    this.point = new double[point.length];
-    System.arraycopy(point, 0, this.point, 0, point.length);
-  }
+    /**
+     * Constructor from a solution
+     *
+     * @param solution
+     */
+    public ArrayPoint(Solution<?> solution) {
+        if (solution == null) {
+            throw new JMetalException("The solution is null");
+        }
 
-  @Override
-  public int getNumberOfDimensions() {
-    return point.length;
-  }
+        int dimensions = solution.getNumberOfObjectives();
+        point = new double[dimensions];
 
-  @Override
-  public double[] getValues() {
-    return point;
-  }
-
-  @Override
-  public double getDimensionValue(int index) {
-    if ((index < 0) || (index >= point.length)) {
-      throw new JMetalException("Index value invalid: " + index +
-          ". The point length is: " + point.length) ;
-    }
-    return point[index] ;
-  }
-
-  @Override
-  public void setDimensionValue(int index, double value) {
-    if ((index < 0) || (index >= point.length)) {
-      throw new JMetalException("Index value invalid: " + index +
-          ". The point length is: " + point.length) ;
-    }
-    point[index] = value ;
-  }
-
-  @Override
-  public String toString() {
-    String result = "";
-    for (double anObjectives_ : point) {
-      result += anObjectives_ + " ";
+        for (int i = 0; i < dimensions; i++) {
+            point[i] = solution.getObjective(i);
+        }
     }
 
-    return result;
-  }
+    /**
+     * Constructor from an array of double values
+     *
+     * @param point
+     */
+    public ArrayPoint(double[] point) {
+        if (point == null) {
+            throw new JMetalException("The array of values is null");
+        }
 
-  @Override public boolean equals(Object o) {
-    if (this == o)
-      return true;
-    if (o == null || getClass() != o.getClass())
-      return false;
+        this.point = new double[point.length];
+        System.arraycopy(point, 0, this.point, 0, point.length);
+    }
 
-    ArrayPoint that = (ArrayPoint) o;
+    @Override
+    public int getNumberOfDimensions() {
+        return point.length;
+    }
 
-    if (!Arrays.equals(point, that.point))
-      return false;
+    @Override
+    public double[] getValues() {
+        return point;
+    }
 
-    return true;
-  }
+    @Override
+    public double getDimensionValue(int index) {
+        if ((index < 0) || (index >= point.length)) {
+            throw new JMetalException("Index value invalid: " + index +
+                    ". The point length is: " + point.length);
+        }
+        return point[index];
+    }
 
-  @Override public int hashCode() {
-    return Arrays.hashCode(point);
-  }
+    @Override
+    public void setDimensionValue(int index, double value) {
+        if ((index < 0) || (index >= point.length)) {
+            throw new JMetalException("Index value invalid: " + index +
+                    ". The point length is: " + point.length);
+        }
+        point[index] = value;
+    }
+
+    @Override
+    public String toString() {
+        String result = "";
+        for (double anObjectives_ : point) {
+            result += anObjectives_ + " ";
+        }
+
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        ArrayPoint that = (ArrayPoint) o;
+
+        if (!Arrays.equals(point, that.point))
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(point);
+    }
 }

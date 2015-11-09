@@ -30,77 +30,83 @@ import java.util.List;
  * @author Juan J. Durillo
  */
 public class NonDominatedSolutionListArchive<S extends Solution<?>> implements Archive<S> {
-  private List<S> solutionList;
-  private Comparator<S> dominanceComparator;
-  private Comparator<S> equalSolutions = new EqualSolutionsComparator<S>();
+    private List<S> solutionList;
+    private Comparator<S> dominanceComparator;
+    private Comparator<S> equalSolutions = new EqualSolutionsComparator<S>();
 
-  /** Constructor */
-  public NonDominatedSolutionListArchive() {
-    this(new DominanceComparator<S>()) ;
-  }
-
-  /** Constructor */
-  public NonDominatedSolutionListArchive(DominanceComparator<S> comparator) {
-    dominanceComparator = comparator ;
-   
-    solutionList = new ArrayList<>() ;
-  }
-
-  /**
-   * Inserts a solution in the list
-   *
-   * @param solution The solution to be inserted.
-   * @return true if the operation success, and false if the solution is
-   * dominated or if an identical individual exists.
-   * The decision variables can be null if the solution is read from a file; in
-   * that case, the domination tests are omitted
-   */
-  public boolean add(S solution) {
-    boolean solutionInserted = false ;
-    if (solutionList.size() == 0) {
-      solutionList.add(solution) ;
-      solutionInserted = true ;
-    } else {
-      Iterator<S> iterator = solutionList.iterator();
-      boolean isDominated = false;
-      
-      boolean isContained = false;
-      while (((!isDominated) && (!isContained)) && (iterator.hasNext())) {
-        S listIndividual = iterator.next();
-        int flag = dominanceComparator.compare(solution, listIndividual);
-        if (flag == -1) {
-          iterator.remove();
-        }  else if (flag == 1) {
-          isDominated = true; // dominated by one in the list
-        } else if (flag == 0) {
-        	int equalflag = equalSolutions.compare(solution, listIndividual);
-        	if (equalflag==0) // solutions are equals
-        		isContained = true;
-        }
-        	
-      }
-      
-      if (!isDominated && !isContained) {
-    	  solutionList.add(solution);
-    	  solutionInserted = true;
-      }
-      
-      return solutionInserted;
+    /**
+     * Constructor
+     */
+    public NonDominatedSolutionListArchive() {
+        this(new DominanceComparator<S>());
     }
 
-    return solutionInserted ;
-  }
+    /**
+     * Constructor
+     */
+    public NonDominatedSolutionListArchive(DominanceComparator<S> comparator) {
+        dominanceComparator = comparator;
 
-  @Override
-  public List<S> getSolutionList() {
-    return solutionList;
-  }
+        solutionList = new ArrayList<>();
+    }
 
-  @Override public int size() {
-    return solutionList.size();
-  }
+    /**
+     * Inserts a solution in the list
+     *
+     * @param solution The solution to be inserted.
+     * @return true if the operation success, and false if the solution is
+     * dominated or if an identical individual exists.
+     * The decision variables can be null if the solution is read from a file; in
+     * that case, the domination tests are omitted
+     */
+    public boolean add(S solution) {
+        boolean solutionInserted = false;
+        if (solutionList.size() == 0) {
+            solutionList.add(solution);
+            solutionInserted = true;
+        } else {
+            Iterator<S> iterator = solutionList.iterator();
+            boolean isDominated = false;
 
-  @Override public S get(int index) {
-    return solutionList.get(index);
-  }
+            boolean isContained = false;
+            while (((!isDominated) && (!isContained)) && (iterator.hasNext())) {
+                S listIndividual = iterator.next();
+                int flag = dominanceComparator.compare(solution, listIndividual);
+                if (flag == -1) {
+                    iterator.remove();
+                } else if (flag == 1) {
+                    isDominated = true; // dominated by one in the list
+                } else if (flag == 0) {
+                    int equalflag = equalSolutions.compare(solution, listIndividual);
+                    if (equalflag == 0) // solutions are equals
+                        isContained = true;
+                }
+
+            }
+
+            if (!isDominated && !isContained) {
+                solutionList.add(solution);
+                solutionInserted = true;
+            }
+
+            return solutionInserted;
+        }
+
+        return solutionInserted;
+    }
+
+    @Override
+    public List<S> getSolutionList() {
+        return solutionList;
+    }
+
+    @Override
+    public int size() {
+        return solutionList.size();
+    }
+
+    @Override
+    public S get(int index) {
+        return solutionList.get(index);
+    }
 }

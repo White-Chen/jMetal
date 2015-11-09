@@ -35,272 +35,278 @@ import static org.mockito.Mockito.*;
  * @version 1.0
  */
 public class SolutionListUtilsTest {
-  @Rule
-  public ExpectedException exception = ExpectedException.none();
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
 
-  /***** Unit tests to method findBestSolution ****/
-  @Test
-  public void shouldFindBestSolutionRaiseAnExceptionIfTheSolutionListIsNull() {
-    exception.expect(JMetalException.class);
-    exception.expectMessage(containsString("The solution list is null"));
+    /**
+     * ** Unit tests to method findBestSolution ***
+     */
+    @Test
+    public void shouldFindBestSolutionRaiseAnExceptionIfTheSolutionListIsNull() {
+        exception.expect(JMetalException.class);
+        exception.expectMessage(containsString("The solution list is null"));
 
-    Comparator<Solution<?>> comparator = mock(Comparator.class) ;
+        Comparator<Solution<?>> comparator = mock(Comparator.class);
 
-    SolutionListUtils.findBestSolution(null, comparator) ;
-  }
-
-  @Test
-  public void shouldFindBestSolutionRaiseAnExceptionIfTheSolutionListIsEmpty() {
-    exception.expect(JMetalException.class);
-    exception.expectMessage(containsString("The solution list is empty"));
-
-    Comparator<DoubleSolution> comparator = mock(Comparator.class) ;
-    List<DoubleSolution> list = new ArrayList<>() ;
-
-    SolutionListUtils.findBestSolution(list, comparator) ;
-  }
-
-  @Test
-  public void shouldFindBestSolutionRaiseAnExceptionIfTheComparatorIsNull() {
-    exception.expect(JMetalException.class);
-    exception.expectMessage(containsString("The comparator is null"));
-
-    List<DoubleSolution> list = new ArrayList<>() ;
-    list.add(mock(DoubleSolution.class)) ;
-
-    SolutionListUtils.findBestSolution(list, null) ;
-  }
-
-  @Test
-  public void shouldFindBestSolutionReturnTheSolutionInTheListWhenItContainsOneSolution() {
-    Comparator<IntegerSolution> comparator = mock(Comparator.class) ;
-    List<IntegerSolution> list = new ArrayList<>() ;
-    IntegerSolution solution = mock(IntegerSolution.class) ;
-    list.add(solution) ;
-
-    assertSame(solution, SolutionListUtils.findBestSolution(list, comparator)) ;
-  }
-
-  @Test
-  public void shouldFindBestSolutionReturnTheSecondSolutionInTheListIfIsTheBestOufOfTwoSolutions() {
-    Comparator<IntegerSolution> comparator = mock(Comparator.class) ;
-    List<IntegerSolution> list = new ArrayList<>() ;
-    IntegerSolution solution1 = mock(IntegerSolution.class) ;
-    list.add(solution1) ;
-    IntegerSolution solution2 = mock(IntegerSolution.class) ;
-    list.add(solution2) ;
-
-    when(comparator.compare(Matchers.<IntegerSolution> anyObject(), Matchers.<IntegerSolution> anyObject())).thenReturn(1) ;
-
-    assertSame(solution2, SolutionListUtils.findBestSolution(list, comparator)) ;
-  }
-
-  @Test
-  public void shouldFindBestSolutionReturnTheLastOneIfThisIsTheBestSolutionInALastInAListWithFiveSolutions() {
-    Comparator<IntegerSolution> comparator = mock(Comparator.class) ;
-    List<IntegerSolution> list = new ArrayList<>() ;
-    for (int i = 0 ; i < 5; i++) {
-      list.add(mock(IntegerSolution.class)) ;
+        SolutionListUtils.findBestSolution(null, comparator);
     }
 
-    when(comparator.compare(Matchers.<IntegerSolution> anyObject(), Matchers.<IntegerSolution> anyObject())).thenReturn(1, 0, 0, 1) ;
-    assertSame(list.get(4), SolutionListUtils.findBestSolution(list, comparator));
-    verify(comparator, times(4)).compare(Matchers.<IntegerSolution> anyObject(), Matchers.<IntegerSolution> anyObject()) ;
-  }
+    @Test
+    public void shouldFindBestSolutionRaiseAnExceptionIfTheSolutionListIsEmpty() {
+        exception.expect(JMetalException.class);
+        exception.expectMessage(containsString("The solution list is empty"));
 
-  /***** Unit tests to method findIndexOfBestSolution ****/
-  @Test
-  public void shouldFindIndexOfBestSolutionRaiseAnExceptionIfTheSolutionListIsNull() {
-    exception.expect(JMetalException.class);
-    exception.expectMessage(containsString("The solution list is null"));
+        Comparator<DoubleSolution> comparator = mock(Comparator.class);
+        List<DoubleSolution> list = new ArrayList<>();
 
-    Comparator<Solution<?>> comparator = mock(Comparator.class) ;
-
-    SolutionListUtils.findIndexOfBestSolution(null, comparator) ;
-  }
-
-  @Test
-  public void shouldFindIndexOfBestSolutionRaiseAnExceptionIfTheSolutionListIsEmpty() {
-    exception.expect(JMetalException.class);
-    exception.expectMessage(containsString("The solution list is empty"));
-
-    Comparator<DoubleSolution> comparator = mock(Comparator.class) ;
-    List<DoubleSolution> list = new ArrayList<>() ;
-
-    SolutionListUtils.findIndexOfBestSolution(list, comparator) ;
-  }
-
-  @Test
-  public void shouldFindIndexOfBestSolutionRaiseAnExceptionIfTheComparatorIsNull() {
-    exception.expect(JMetalException.class);
-    exception.expectMessage(containsString("The comparator is null"));
-
-    List<DoubleSolution> list = new ArrayList<>() ;
-    list.add(mock(DoubleSolution.class)) ;
-
-    SolutionListUtils.findIndexOfBestSolution(list, null) ;
-  }
-
-  @Test
-  public void shouldFindIndexOfBestSolutionReturnZeroIfTheListWhenItContainsOneSolution() {
-    Comparator<IntegerSolution> comparator = mock(Comparator.class) ;
-    List<IntegerSolution> list = new ArrayList<>() ;
-    IntegerSolution solution = mock(IntegerSolution.class) ;
-    list.add(solution) ;
-
-    assertEquals(0, SolutionListUtils.findIndexOfBestSolution(list, comparator)) ;
-  }
-
-  @Test
-  public void shouldFindIndexOfBestSolutionReturnZeroIfTheFirstSolutionItTheBestOutOfTwoSolutionsInTheList() {
-    Comparator<IntegerSolution> comparator = mock(Comparator.class) ;
-    List<IntegerSolution> list = new ArrayList<>() ;
-    IntegerSolution solution1 = mock(IntegerSolution.class) ;
-    list.add(solution1) ;
-    IntegerSolution solution2 = mock(IntegerSolution.class) ;
-    list.add(solution2) ;
-
-    when(comparator.compare(Matchers.<IntegerSolution> anyObject(), Matchers.<IntegerSolution> anyObject())).thenReturn(0) ;
-    assertEquals(0, SolutionListUtils.findIndexOfBestSolution(list, comparator));
-    verify(comparator).compare(Matchers.<IntegerSolution> anyObject(), Matchers.<IntegerSolution> anyObject()) ;
-  }
-
-  @Test
-  public void shouldFindIndexOfBestSolutionReturnOneIfTheSecondSolutionItTheBestOutOfTwoSolutionInTheList() {
-    Comparator<IntegerSolution> comparator = mock(Comparator.class) ;
-    List<IntegerSolution> list = new ArrayList<>() ;
-    IntegerSolution solution1 = mock(IntegerSolution.class) ;
-    list.add(solution1) ;
-    IntegerSolution solution2 = mock(IntegerSolution.class) ;
-    list.add(solution2) ;
-
-    when(comparator.compare(Matchers.<IntegerSolution> anyObject(), Matchers.<IntegerSolution> anyObject())).thenReturn(1) ;
-    assertEquals(1, SolutionListUtils.findIndexOfBestSolution(list, comparator));
-    verify(comparator).compare(Matchers.<IntegerSolution> anyObject(), Matchers.<IntegerSolution> anyObject()) ;
-  }
-
-  @Test
-  public void shouldFindIndexOfBestSolutionReturn4IfTheBestSolutionIsTheLastInAListWithFiveSolutions() {
-    Comparator<IntegerSolution> comparator = mock(Comparator.class) ;
-    List<IntegerSolution> list = new ArrayList<>() ;
-    for (int i = 0 ; i < 5; i++) {
-      list.add(mock(IntegerSolution.class)) ;
+        SolutionListUtils.findBestSolution(list, comparator);
     }
 
-    when(comparator.compare(Matchers.<IntegerSolution> anyObject(), Matchers.<IntegerSolution> anyObject())).thenReturn(1,0,0,1) ;
-    assertEquals(4, SolutionListUtils.findIndexOfBestSolution(list, comparator));
-    verify(comparator, times(4)).compare(Matchers.<IntegerSolution> anyObject(), Matchers.<IntegerSolution> anyObject()) ;
-  }
+    @Test
+    public void shouldFindBestSolutionRaiseAnExceptionIfTheComparatorIsNull() {
+        exception.expect(JMetalException.class);
+        exception.expectMessage(containsString("The comparator is null"));
 
-  /***** Unit tests to method selectNRandomDifferentSolutions ****/
-  @Test
-  public void shouldSelectNRandomDifferentSolutionsRaiseAnExceptionIfTheSolutionListIsNull() {
-    exception.expect(JMetalException.class);
-    exception.expectMessage(containsString("The solution list is null"));
+        List<DoubleSolution> list = new ArrayList<>();
+        list.add(mock(DoubleSolution.class));
 
-    SolutionListUtils.selectNRandomDifferentSolutions(1, null) ;
-  }
-
-  @Test
-  public void shouldSelectNRandomDifferentSolutionsRaiseAnExceptionIfTheSolutionListIsEmpty() {
-    exception.expect(JMetalException.class);
-    exception.expectMessage(containsString("The solution list is empty"));
-
-    List<DoubleSolution> list = new ArrayList<>() ;
-
-    SolutionListUtils.selectNRandomDifferentSolutions(1, list) ;
-  }
-
-  @Test
-  public void shouldSelectNRandomDifferentSolutionsReturnASingleSolution() {
-    List<Solution<?>> list = new ArrayList<>() ;
-    list.add(mock(Solution.class)) ;
-
-    assertEquals(1, list.size()) ;
-  }
-
-  @Test
-  public void shouldSelectNRandomDifferentSolutionsRaiseAnExceptionIfTheListSizeIsOneAndTwoSolutionsAreRequested() {
-    exception.expect(JMetalException.class);
-    exception.expectMessage(containsString("The solution list size (1) is less than " +
-        "the number of requested solutions (2)"));
-
-    List<Solution<?>> list = new ArrayList<>(1) ;
-    list.add(mock(Solution.class)) ;
-
-    SolutionListUtils.selectNRandomDifferentSolutions(2, list) ;
-  }
-
-  @Test
-  public void shouldelectNRandomDifferentSolutionsRaiseAnExceptionIfTheListSizeIsTwoAndFourSolutionsAreRequested() {
-    exception.expect(JMetalException.class);
-    exception.expectMessage(containsString("The solution list size (2) is less than " +
-        "the number of requested solutions (4)"));
-
-    List<Solution<?>> list = new ArrayList<>(2) ;
-    list.add(mock(Solution.class)) ;
-    list.add(mock(Solution.class)) ;
-
-    SolutionListUtils.selectNRandomDifferentSolutions(4, list) ;
-  }
-
-  @Test
-  public void shouldExecuteReturnTheSolutionInTheListIfTheListContainsASolution() {
-    List<IntegerSolution> list = new ArrayList<>(2) ;
-    IntegerSolution solution = mock(IntegerSolution.class) ;
-    list.add(solution) ;
-
-    List<IntegerSolution> result = SolutionListUtils.selectNRandomDifferentSolutions(1, list);
-    assertSame(solution, result.get(0)) ;
-  }
-
-  @Test
-  public void shouldSelectNRandomDifferentSolutionsReturnTheSolutionSInTheListIfTheListContainsTwoSolutions() {
-    List<BinarySolution> list = new ArrayList<>(2) ;
-    BinarySolution solution1 = mock(BinarySolution.class) ;
-    BinarySolution solution2 = mock(BinarySolution.class) ;
-    list.add(solution1) ;
-    list.add(solution2) ;
-
-    List<BinarySolution> result = SolutionListUtils.selectNRandomDifferentSolutions(2, list);
-
-    assertTrue(result.contains(solution1));
-    assertTrue(result.contains(solution2));
-  }
-
-  @Test
-  public void shouldSelectNRandomDifferentSolutionsReturnTheCorrectNumberOfSolutions() {
-    int listSize = 20 ;
-    int solutionsToBeReturned = 4 ;
-
-    List<BinarySolution> list = new ArrayList<>(listSize) ;
-    for (int i = 0; i < listSize; i++) {
-      list.add(mock(BinarySolution.class));
+        SolutionListUtils.findBestSolution(list, null);
     }
 
-    List<BinarySolution> result = SolutionListUtils.selectNRandomDifferentSolutions(solutionsToBeReturned, list);
-    assertEquals(solutionsToBeReturned, result.size());
-  }
+    @Test
+    public void shouldFindBestSolutionReturnTheSolutionInTheListWhenItContainsOneSolution() {
+        Comparator<IntegerSolution> comparator = mock(Comparator.class);
+        List<IntegerSolution> list = new ArrayList<>();
+        IntegerSolution solution = mock(IntegerSolution.class);
+        list.add(solution);
 
-  /**
-   * If the list contains 4 solutions, the result list must return all of them
-   */
-  @Test
-  public void shouldSelectNRandomDifferentSolutionsReturnTheCorrectListOfSolutions() {
-    int listSize = 4 ;
-    int solutionsToBeReturned = 4 ;
-
-    List<IntegerSolution> list = new ArrayList<>(listSize) ;
-    IntegerSolution[] solution = new IntegerSolution[solutionsToBeReturned] ;
-    for (int i = 0; i < listSize; i++) {
-      solution[i] = (mock(IntegerSolution.class)) ;
-      list.add(solution[i]);
+        assertSame(solution, SolutionListUtils.findBestSolution(list, comparator));
     }
 
-    List<IntegerSolution> result = SolutionListUtils.selectNRandomDifferentSolutions(solutionsToBeReturned, list);
-    assertTrue(result.contains(solution[0]));
-    assertTrue(result.contains(solution[1]));
-    assertTrue(result.contains(solution[2]));
-    assertTrue(result.contains(solution[3]));
-  }
+    @Test
+    public void shouldFindBestSolutionReturnTheSecondSolutionInTheListIfIsTheBestOufOfTwoSolutions() {
+        Comparator<IntegerSolution> comparator = mock(Comparator.class);
+        List<IntegerSolution> list = new ArrayList<>();
+        IntegerSolution solution1 = mock(IntegerSolution.class);
+        list.add(solution1);
+        IntegerSolution solution2 = mock(IntegerSolution.class);
+        list.add(solution2);
+
+        when(comparator.compare(Matchers.<IntegerSolution>anyObject(), Matchers.<IntegerSolution>anyObject())).thenReturn(1);
+
+        assertSame(solution2, SolutionListUtils.findBestSolution(list, comparator));
+    }
+
+    @Test
+    public void shouldFindBestSolutionReturnTheLastOneIfThisIsTheBestSolutionInALastInAListWithFiveSolutions() {
+        Comparator<IntegerSolution> comparator = mock(Comparator.class);
+        List<IntegerSolution> list = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            list.add(mock(IntegerSolution.class));
+        }
+
+        when(comparator.compare(Matchers.<IntegerSolution>anyObject(), Matchers.<IntegerSolution>anyObject())).thenReturn(1, 0, 0, 1);
+        assertSame(list.get(4), SolutionListUtils.findBestSolution(list, comparator));
+        verify(comparator, times(4)).compare(Matchers.<IntegerSolution>anyObject(), Matchers.<IntegerSolution>anyObject());
+    }
+
+    /**
+     * ** Unit tests to method findIndexOfBestSolution ***
+     */
+    @Test
+    public void shouldFindIndexOfBestSolutionRaiseAnExceptionIfTheSolutionListIsNull() {
+        exception.expect(JMetalException.class);
+        exception.expectMessage(containsString("The solution list is null"));
+
+        Comparator<Solution<?>> comparator = mock(Comparator.class);
+
+        SolutionListUtils.findIndexOfBestSolution(null, comparator);
+    }
+
+    @Test
+    public void shouldFindIndexOfBestSolutionRaiseAnExceptionIfTheSolutionListIsEmpty() {
+        exception.expect(JMetalException.class);
+        exception.expectMessage(containsString("The solution list is empty"));
+
+        Comparator<DoubleSolution> comparator = mock(Comparator.class);
+        List<DoubleSolution> list = new ArrayList<>();
+
+        SolutionListUtils.findIndexOfBestSolution(list, comparator);
+    }
+
+    @Test
+    public void shouldFindIndexOfBestSolutionRaiseAnExceptionIfTheComparatorIsNull() {
+        exception.expect(JMetalException.class);
+        exception.expectMessage(containsString("The comparator is null"));
+
+        List<DoubleSolution> list = new ArrayList<>();
+        list.add(mock(DoubleSolution.class));
+
+        SolutionListUtils.findIndexOfBestSolution(list, null);
+    }
+
+    @Test
+    public void shouldFindIndexOfBestSolutionReturnZeroIfTheListWhenItContainsOneSolution() {
+        Comparator<IntegerSolution> comparator = mock(Comparator.class);
+        List<IntegerSolution> list = new ArrayList<>();
+        IntegerSolution solution = mock(IntegerSolution.class);
+        list.add(solution);
+
+        assertEquals(0, SolutionListUtils.findIndexOfBestSolution(list, comparator));
+    }
+
+    @Test
+    public void shouldFindIndexOfBestSolutionReturnZeroIfTheFirstSolutionItTheBestOutOfTwoSolutionsInTheList() {
+        Comparator<IntegerSolution> comparator = mock(Comparator.class);
+        List<IntegerSolution> list = new ArrayList<>();
+        IntegerSolution solution1 = mock(IntegerSolution.class);
+        list.add(solution1);
+        IntegerSolution solution2 = mock(IntegerSolution.class);
+        list.add(solution2);
+
+        when(comparator.compare(Matchers.<IntegerSolution>anyObject(), Matchers.<IntegerSolution>anyObject())).thenReturn(0);
+        assertEquals(0, SolutionListUtils.findIndexOfBestSolution(list, comparator));
+        verify(comparator).compare(Matchers.<IntegerSolution>anyObject(), Matchers.<IntegerSolution>anyObject());
+    }
+
+    @Test
+    public void shouldFindIndexOfBestSolutionReturnOneIfTheSecondSolutionItTheBestOutOfTwoSolutionInTheList() {
+        Comparator<IntegerSolution> comparator = mock(Comparator.class);
+        List<IntegerSolution> list = new ArrayList<>();
+        IntegerSolution solution1 = mock(IntegerSolution.class);
+        list.add(solution1);
+        IntegerSolution solution2 = mock(IntegerSolution.class);
+        list.add(solution2);
+
+        when(comparator.compare(Matchers.<IntegerSolution>anyObject(), Matchers.<IntegerSolution>anyObject())).thenReturn(1);
+        assertEquals(1, SolutionListUtils.findIndexOfBestSolution(list, comparator));
+        verify(comparator).compare(Matchers.<IntegerSolution>anyObject(), Matchers.<IntegerSolution>anyObject());
+    }
+
+    @Test
+    public void shouldFindIndexOfBestSolutionReturn4IfTheBestSolutionIsTheLastInAListWithFiveSolutions() {
+        Comparator<IntegerSolution> comparator = mock(Comparator.class);
+        List<IntegerSolution> list = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            list.add(mock(IntegerSolution.class));
+        }
+
+        when(comparator.compare(Matchers.<IntegerSolution>anyObject(), Matchers.<IntegerSolution>anyObject())).thenReturn(1, 0, 0, 1);
+        assertEquals(4, SolutionListUtils.findIndexOfBestSolution(list, comparator));
+        verify(comparator, times(4)).compare(Matchers.<IntegerSolution>anyObject(), Matchers.<IntegerSolution>anyObject());
+    }
+
+    /**
+     * ** Unit tests to method selectNRandomDifferentSolutions ***
+     */
+    @Test
+    public void shouldSelectNRandomDifferentSolutionsRaiseAnExceptionIfTheSolutionListIsNull() {
+        exception.expect(JMetalException.class);
+        exception.expectMessage(containsString("The solution list is null"));
+
+        SolutionListUtils.selectNRandomDifferentSolutions(1, null);
+    }
+
+    @Test
+    public void shouldSelectNRandomDifferentSolutionsRaiseAnExceptionIfTheSolutionListIsEmpty() {
+        exception.expect(JMetalException.class);
+        exception.expectMessage(containsString("The solution list is empty"));
+
+        List<DoubleSolution> list = new ArrayList<>();
+
+        SolutionListUtils.selectNRandomDifferentSolutions(1, list);
+    }
+
+    @Test
+    public void shouldSelectNRandomDifferentSolutionsReturnASingleSolution() {
+        List<Solution<?>> list = new ArrayList<>();
+        list.add(mock(Solution.class));
+
+        assertEquals(1, list.size());
+    }
+
+    @Test
+    public void shouldSelectNRandomDifferentSolutionsRaiseAnExceptionIfTheListSizeIsOneAndTwoSolutionsAreRequested() {
+        exception.expect(JMetalException.class);
+        exception.expectMessage(containsString("The solution list size (1) is less than " +
+                "the number of requested solutions (2)"));
+
+        List<Solution<?>> list = new ArrayList<>(1);
+        list.add(mock(Solution.class));
+
+        SolutionListUtils.selectNRandomDifferentSolutions(2, list);
+    }
+
+    @Test
+    public void shouldelectNRandomDifferentSolutionsRaiseAnExceptionIfTheListSizeIsTwoAndFourSolutionsAreRequested() {
+        exception.expect(JMetalException.class);
+        exception.expectMessage(containsString("The solution list size (2) is less than " +
+                "the number of requested solutions (4)"));
+
+        List<Solution<?>> list = new ArrayList<>(2);
+        list.add(mock(Solution.class));
+        list.add(mock(Solution.class));
+
+        SolutionListUtils.selectNRandomDifferentSolutions(4, list);
+    }
+
+    @Test
+    public void shouldExecuteReturnTheSolutionInTheListIfTheListContainsASolution() {
+        List<IntegerSolution> list = new ArrayList<>(2);
+        IntegerSolution solution = mock(IntegerSolution.class);
+        list.add(solution);
+
+        List<IntegerSolution> result = SolutionListUtils.selectNRandomDifferentSolutions(1, list);
+        assertSame(solution, result.get(0));
+    }
+
+    @Test
+    public void shouldSelectNRandomDifferentSolutionsReturnTheSolutionSInTheListIfTheListContainsTwoSolutions() {
+        List<BinarySolution> list = new ArrayList<>(2);
+        BinarySolution solution1 = mock(BinarySolution.class);
+        BinarySolution solution2 = mock(BinarySolution.class);
+        list.add(solution1);
+        list.add(solution2);
+
+        List<BinarySolution> result = SolutionListUtils.selectNRandomDifferentSolutions(2, list);
+
+        assertTrue(result.contains(solution1));
+        assertTrue(result.contains(solution2));
+    }
+
+    @Test
+    public void shouldSelectNRandomDifferentSolutionsReturnTheCorrectNumberOfSolutions() {
+        int listSize = 20;
+        int solutionsToBeReturned = 4;
+
+        List<BinarySolution> list = new ArrayList<>(listSize);
+        for (int i = 0; i < listSize; i++) {
+            list.add(mock(BinarySolution.class));
+        }
+
+        List<BinarySolution> result = SolutionListUtils.selectNRandomDifferentSolutions(solutionsToBeReturned, list);
+        assertEquals(solutionsToBeReturned, result.size());
+    }
+
+    /**
+     * If the list contains 4 solutions, the result list must return all of them
+     */
+    @Test
+    public void shouldSelectNRandomDifferentSolutionsReturnTheCorrectListOfSolutions() {
+        int listSize = 4;
+        int solutionsToBeReturned = 4;
+
+        List<IntegerSolution> list = new ArrayList<>(listSize);
+        IntegerSolution[] solution = new IntegerSolution[solutionsToBeReturned];
+        for (int i = 0; i < listSize; i++) {
+            solution[i] = (mock(IntegerSolution.class));
+            list.add(solution[i]);
+        }
+
+        List<IntegerSolution> result = SolutionListUtils.selectNRandomDifferentSolutions(solutionsToBeReturned, list);
+        assertTrue(result.contains(solution[0]));
+        assertTrue(result.contains(solution[1]));
+        assertTrue(result.contains(solution[2]));
+        assertTrue(result.contains(solution[3]));
+    }
 }

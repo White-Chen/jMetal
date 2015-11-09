@@ -21,5 +21,5 @@ import org.uma.jmetal.util.point.Point;
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public interface PointDistance {
-  public double compute(Point pointA, Point pointB) ;
+    public double compute(Point pointA, Point pointB);
 }
