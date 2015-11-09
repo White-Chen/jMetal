@@ -42,30 +42,29 @@ import java.util.List;
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public class GDE3BigDataRunner {
-  /**
-   * @param args Command line arguments.
-   * @throws SecurityException
-   * Invoking command:
-   mvn
-    -pl jmetal-exec
-    exec:java -Dexec.mainClass="org.uma.jmetal.runner.multiobjective.GDE3BigDataRunner"
-    -Dexec.args="[problemName]"
-   */
-  public static void main(String[] args) {
-    DoubleProblem problem;
-    Algorithm<List<DoubleSolution>> algorithm;
-    DifferentialEvolutionSelection selection;
-    DifferentialEvolutionCrossover crossover;
+    /**
+     * @param args Command line arguments.
+     * @throws SecurityException Invoking command:
+     *                           mvn
+     *                           -pl jmetal-exec
+     *                           exec:java -Dexec.mainClass="GDE3BigDataRunner"
+     *                           -Dexec.args="[problemName]"
+     */
+    public static void main(String[] args) {
+        DoubleProblem problem;
+        Algorithm<List<DoubleSolution>> algorithm;
+        DifferentialEvolutionSelection selection;
+        DifferentialEvolutionCrossover crossover;
 
-    String instanceName ;
+        String instanceName;
 
-    if (args.length == 1) {
-      instanceName = args[0] ;
-    } else {
-      instanceName = "D12" ;
-    }
+        if (args.length == 1) {
+            instanceName = args[0];
+        } else {
+            instanceName = "D12";
+        }
 
-    problem = new BigOpt2015(instanceName) ;
+        problem = new BigOpt2015(instanceName);
 
      /*
      * Alternatives:
@@ -73,33 +72,33 @@ public class GDE3BigDataRunner {
      * - evaluator = new MultithreadedSolutionSetEvaluator(threads, problem)
      */
 
-    double cr = 1.5 ;
-    double f = 0.5 ;
-    crossover = new DifferentialEvolutionCrossover(cr, f, "rand/1/bin") ;
+        double cr = 1.5;
+        double f = 0.5;
+        crossover = new DifferentialEvolutionCrossover(cr, f, "rand/1/bin");
 
-    selection = new DifferentialEvolutionSelection() ;
+        selection = new DifferentialEvolutionSelection();
 
-    algorithm = new GDE3Builder(problem)
-      .setCrossover(crossover)
-      .setSelection(selection)
-      .setMaxIterations(2500)
-      .setPopulationSize(100)
-      .build() ;
+        algorithm = new GDE3Builder(problem)
+                .setCrossover(crossover)
+                .setSelection(selection)
+                .setMaxIterations(2500)
+                .setPopulationSize(100)
+                .build();
 
-    AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
-      .execute() ;
+        AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
+                .execute();
 
-    List<DoubleSolution> population = ((GDE3)algorithm).getResult() ;
-    long computingTime = algorithmRunner.getComputingTime() ;
+        List<DoubleSolution> population = ((GDE3) algorithm).getResult();
+        long computingTime = algorithmRunner.getComputingTime();
 
-    new SolutionSetOutput.Printer(population)
-      .setSeparator("\t")
-      .setVarFileOutputContext(new DefaultFileOutputContext("VAR.tsv"))
-      .setFunFileOutputContext(new DefaultFileOutputContext("FUN.tsv"))
-      .print();
+        new SolutionSetOutput.Printer(population)
+                .setSeparator("\t")
+                .setVarFileOutputContext(new DefaultFileOutputContext("VAR.tsv"))
+                .setFunFileOutputContext(new DefaultFileOutputContext("FUN.tsv"))
+                .print();
 
-    JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
-    JMetalLogger.logger.info("Objectives values have been written to file FUN.tsv");
-    JMetalLogger.logger.info("Variables values have been written to file VAR.tsv");
-  }
+        JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
+        JMetalLogger.logger.info("Objectives values have been written to file FUN.tsv");
+        JMetalLogger.logger.info("Variables values have been written to file VAR.tsv");
+    }
 }

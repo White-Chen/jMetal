@@ -1,6 +1,6 @@
-
 package org.uma.jmetal.runner.multiobjective;
 
+import org.apache.commons.collections.map.ListOrderedMap;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.multiobjective.spea2.SPEA2Builder;
 import org.uma.jmetal.operator.CrossoverOperator;
@@ -13,12 +13,12 @@ import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.runner.AbstractAlgorithmRunner;
 import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.util.AlgorithmRunner;
-import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetal.util.JMetalLogger;
+import org.uma.jmetal.util.ProblemListUtils;
 import org.uma.jmetal.util.ProblemUtils;
 import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
+import org.uma.jmetal.util.fileoutput.FileRename;
 
-import java.io.FileNotFoundException;
 import java.util.List;
 
 /**
@@ -28,64 +28,87 @@ import java.util.List;
  */
 
 public class SPEA2Runner extends AbstractAlgorithmRunner {
-  /**
-   * @param args Command line arguments.
-   * @throws java.io.IOException
-   * @throws SecurityException
-   * @throws ClassNotFoundException
-   * Invoking command:
-  java org.uma.jmetal.runner.multiobjective.SPEA2BinaryRunner problemName [referenceFront]
-   */
-  public static void main(String[] args) throws JMetalException, FileNotFoundException {
-    Problem<DoubleSolution> problem;
-    Algorithm<List<DoubleSolution>> algorithm;
-    CrossoverOperator<DoubleSolution> crossover;
-    MutationOperator<DoubleSolution> mutation;
-    SelectionOperator<List<DoubleSolution>, DoubleSolution> selection;
+    /**
+     * @param args Command line arguments.
+     * @throws java.io.IOException
+     * @throws SecurityException
+     * @throws ClassNotFoundException Invoking command:
+     *                                java SPEA2BinaryRunner problemName [referenceFront]
+     */
+    public static void experiment() {
+        ListOrderedMap problemMap = ProblemListUtils.getProblemsMap();
 
-    String referenceParetoFront = "" ;
+        for (int i = 0; i < problemMap.size(); i++) {
+            for (int j = 0; j < 30; j++) {
+                singleRun((String) problemMap.get(i), (String) problemMap.getValue(i));
+            }
+        }
 
-    String problemName ;
-    if (args.length == 1) {
-      problemName = args[0];
-    } else if (args.length == 2) {
-      problemName = args[0] ;
-      referenceParetoFront = args[1] ;
-    } else {
-      problemName = "org.uma.jmetal.problem.multiobjective.zdt.ZDT1";
-      referenceParetoFront = "jmetal-problem/src/test/resources/pareto_fronts/ZDT1.pf" ;
+        FileRename.renameFile("G:\\学习资料\\百度云\\ItelliWorkSpace\\J4MOP",
+                "indicators.tsv",
+                "SPEA2_metrics.tsv");
+        FileRename.renameFile("G:\\学习资料\\百度云\\ItelliWorkSpace\\J4MOP",
+                "FUN.tsv",
+                "SPEA2_FUN.tsv");
+        FileRename.renameFile("G:\\学习资料\\百度云\\ItelliWorkSpace\\J4MOP",
+                "VAR.tsv",
+                "SPEA2_VAR.tsv");
     }
 
-    problem = ProblemUtils.loadProblem(problemName);
+    public static void singleRun(String pro, String referencePareto) {
+        Problem<DoubleSolution> problem;
+        Algorithm<List<DoubleSolution>> algorithm;
+        CrossoverOperator<DoubleSolution> crossover;
+        MutationOperator<DoubleSolution> mutation;
+        SelectionOperator<List<DoubleSolution>, DoubleSolution> selection;
 
-    double crossoverProbability = 0.9 ;
-    double crossoverDistributionIndex = 20.0 ;
-    crossover = new SBXCrossover(crossoverProbability, crossoverDistributionIndex) ;
+        String problemName;
+        String referenceParetoFront;
+        if (!pro.isEmpty() && !referencePareto.isEmpty() && pro.trim() != null && referencePareto.trim() != null) {
+            problemName = pro;
+            referenceParetoFront = referencePareto;
+        } else {
+            problemName = "problem.multiobjective.zdt.ZDT1";
+            referenceParetoFront = "problem/src/test/resources/pareto_fronts/ZDT1.pf";
+        }
 
-    double mutationProbability = 1.0 / problem.getNumberOfVariables() ;
-    double mutationDistributionIndex = 20.0 ;
-    mutation = new PolynomialMutation(mutationProbability, mutationDistributionIndex) ;
+        problem = ProblemUtils.<DoubleSolution>loadProblem(problemName);
 
-    selection = new BinaryTournamentSelection<DoubleSolution>(new RankingAndCrowdingDistanceComparator<DoubleSolution>());
+        int iterations;
+        if (problem.getNumberOfObjectives() == 2) {
+            iterations = 300;
+        } else {
+            iterations = 500;
+        }
 
-    algorithm = new SPEA2Builder<>(problem, crossover, mutation)
-        .setSelectionOperator(selection)
-        .setMaxIterations(250)
-        .setPopulationSize(100)
-        .build() ;
+        double crossoverProbability = 0.9;
+        double crossoverDistributionIndex = 20.0;
+        crossover = new SBXCrossover(crossoverProbability, crossoverDistributionIndex);
 
-    AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
-        .execute() ;
+        double mutationProbability = 1.0 / problem.getNumberOfVariables();
+        double mutationDistributionIndex = 20.0;
+        mutation = new PolynomialMutation(mutationProbability, mutationDistributionIndex);
 
-    List<DoubleSolution> population = algorithm.getResult();
+        selection = new BinaryTournamentSelection<DoubleSolution>(new RankingAndCrowdingDistanceComparator<DoubleSolution>());
 
-    long computingTime = algorithmRunner.getComputingTime() ;
+        algorithm = new SPEA2Builder<>(problem, crossover, mutation)
+                .setSelectionOperator(selection)
+                .setMaxIterations(iterations)
+                .setPopulationSize(100)
+                .build();
 
-    JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
+        AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
+                .execute();
 
-    printFinalSolutionSet(population);
-    if (!referenceParetoFront.equals("")) {
-      printQualityIndicators(population, referenceParetoFront) ;
+        List<DoubleSolution> population = algorithm.getResult();
+
+        long computingTime = algorithmRunner.getComputingTime();
+
+        JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
+
+        printFinalSolutionSet(population);
+        if (!referenceParetoFront.equals("")) {
+            printQualityIndicators(population, referenceParetoFront);
+        }
     }
-  }
 }

@@ -38,43 +38,43 @@ import java.util.List;
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public class SteadyStateGeneticAlgorithmRunner {
-  /**
-   * Usage: java org.uma.jmetal.runner.singleobjective.SteadyStateGeneticAlgorithmRunner
-   */
-  public static void main(String[] args) throws Exception {
-    Algorithm<DoubleSolution> algorithm;
-    DoubleProblem problem = new Sphere(20) ;
+    /**
+     * Usage: java org.uma.jmetal.runner.singleobjective.SteadyStateGeneticAlgorithmRunner
+     */
+    public static void main(String[] args) throws Exception {
+        Algorithm<DoubleSolution> algorithm;
+        DoubleProblem problem = new Sphere(20);
 
-    CrossoverOperator<DoubleSolution> crossoverOperator =
-        new SBXCrossover(0.9, 20.0) ;
-    MutationOperator<DoubleSolution> mutationOperator =
-        new PolynomialMutation(1.0 / problem.getNumberOfVariables(), 20.0) ;
-    SelectionOperator<List<DoubleSolution>, DoubleSolution> selectionOperator = new BinaryTournamentSelection<DoubleSolution>() ;
+        CrossoverOperator<DoubleSolution> crossoverOperator =
+                new SBXCrossover(0.9, 20.0);
+        MutationOperator<DoubleSolution> mutationOperator =
+                new PolynomialMutation(1.0 / problem.getNumberOfVariables(), 20.0);
+        SelectionOperator<List<DoubleSolution>, DoubleSolution> selectionOperator = new BinaryTournamentSelection<DoubleSolution>();
 
-    algorithm = new GeneticAlgorithmBuilder<DoubleSolution>(problem, crossoverOperator, mutationOperator)
-        .setPopulationSize(100)
-        .setMaxEvaluations(25000)
-        .setSelectionOperator(selectionOperator)
-        .setVariant(GeneticAlgorithmBuilder.GeneticAlgorithmVariant.STEADY_STATE)
-        .build() ;
+        algorithm = new GeneticAlgorithmBuilder<DoubleSolution>(problem, crossoverOperator, mutationOperator)
+                .setPopulationSize(100)
+                .setMaxEvaluations(25000)
+                .setSelectionOperator(selectionOperator)
+                .setVariant(GeneticAlgorithmBuilder.GeneticAlgorithmVariant.STEADY_STATE)
+                .build();
 
-    AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
-        .execute() ;
+        AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
+                .execute();
 
-    long computingTime = algorithmRunner.getComputingTime() ;
+        long computingTime = algorithmRunner.getComputingTime();
 
-    DoubleSolution solution = algorithm.getResult() ;
-    List<DoubleSolution> population = new ArrayList<>(1) ;
-    population.add(solution) ;
+        DoubleSolution solution = algorithm.getResult();
+        List<DoubleSolution> population = new ArrayList<>(1);
+        population.add(solution);
 
-    new SolutionSetOutput.Printer(population)
-        .setSeparator("\t")
-        .setVarFileOutputContext(new DefaultFileOutputContext("VAR.tsv"))
-        .setFunFileOutputContext(new DefaultFileOutputContext("FUN.tsv"))
-        .print();
+        new SolutionSetOutput.Printer(population)
+                .setSeparator("\t")
+                .setVarFileOutputContext(new DefaultFileOutputContext("VAR.tsv"))
+                .setFunFileOutputContext(new DefaultFileOutputContext("FUN.tsv"))
+                .print();
 
-    JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
-    JMetalLogger.logger.info("Objectives values have been written to file FUN.tsv");
-    JMetalLogger.logger.info("Variables values have been written to file VAR.tsv");
-  }
+        JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
+        JMetalLogger.logger.info("Objectives values have been written to file FUN.tsv");
+        JMetalLogger.logger.info("Variables values have been written to file VAR.tsv");
+    }
 }

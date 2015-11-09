@@ -38,41 +38,41 @@ import java.util.List;
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public class GenerationalGeneticAlgorithmRunner {
-  /**
-   * Usage: java org.uma.jmetal.runner.singleobjective.GenerationalGeneticAlgorithmRunner
-   */
-  public static void main(String[] args) throws Exception {
-    Algorithm<BinarySolution> algorithm;
-    BinaryProblem problem = new OneMax(512) ;
+    /**
+     * Usage: java org.uma.jmetal.runner.singleobjective.GenerationalGeneticAlgorithmRunner
+     */
+    public static void main(String[] args) throws Exception {
+        Algorithm<BinarySolution> algorithm;
+        BinaryProblem problem = new OneMax(512);
 
-    CrossoverOperator<BinarySolution> crossoverOperator = new SinglePointCrossover(0.9) ;
-    MutationOperator<BinarySolution> mutationOperator = new BitFlipMutation(1.0 / problem.getNumberOfBits(0)) ;
-    SelectionOperator<List<BinarySolution>, BinarySolution> selectionOperator = new BinaryTournamentSelection<BinarySolution>();
+        CrossoverOperator<BinarySolution> crossoverOperator = new SinglePointCrossover(0.9);
+        MutationOperator<BinarySolution> mutationOperator = new BitFlipMutation(1.0 / problem.getNumberOfBits(0));
+        SelectionOperator<List<BinarySolution>, BinarySolution> selectionOperator = new BinaryTournamentSelection<BinarySolution>();
 
-    algorithm = new GeneticAlgorithmBuilder<BinarySolution>(problem, crossoverOperator, mutationOperator)
-            .setPopulationSize(100)
-            .setMaxEvaluations(25000)
-            .setSelectionOperator(selectionOperator)
-            .build() ;
+        algorithm = new GeneticAlgorithmBuilder<BinarySolution>(problem, crossoverOperator, mutationOperator)
+                .setPopulationSize(100)
+                .setMaxEvaluations(25000)
+                .setSelectionOperator(selectionOperator)
+                .build();
 
-    AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
-            .execute() ;
+        AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
+                .execute();
 
-    BinarySolution solution = algorithm.getResult() ;
-    List<BinarySolution> population = new ArrayList<>(1) ;
-    population.add(solution) ;
+        BinarySolution solution = algorithm.getResult();
+        List<BinarySolution> population = new ArrayList<>(1);
+        population.add(solution);
 
-    long computingTime = algorithmRunner.getComputingTime() ;
+        long computingTime = algorithmRunner.getComputingTime();
 
-    new SolutionSetOutput.Printer(population)
-            .setSeparator("\t")
-            .setVarFileOutputContext(new DefaultFileOutputContext("VAR.tsv"))
-            .setFunFileOutputContext(new DefaultFileOutputContext("FUN.tsv"))
-            .print();
+        new SolutionSetOutput.Printer(population)
+                .setSeparator("\t")
+                .setVarFileOutputContext(new DefaultFileOutputContext("VAR.tsv"))
+                .setFunFileOutputContext(new DefaultFileOutputContext("FUN.tsv"))
+                .print();
 
-    JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
-    JMetalLogger.logger.info("Objectives values have been written to file FUN.tsv");
-    JMetalLogger.logger.info("Variables values have been written to file VAR.tsv");
+        JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
+        JMetalLogger.logger.info("Objectives values have been written to file FUN.tsv");
+        JMetalLogger.logger.info("Variables values have been written to file VAR.tsv");
 
-  }
+    }
 }

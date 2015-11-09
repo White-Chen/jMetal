@@ -45,64 +45,63 @@ import java.util.List;
  */
 
 public class ParallelSMPSORunner extends AbstractAlgorithmRunner {
-  /**
-   * @param args Command line arguments. The first (optional) argument specifies
-   *             the problem to solve.
-   * @throws org.uma.jmetal.util.JMetalException
-   * @throws java.io.IOException
-   * @throws SecurityException
-   * Invoking command:
-  java org.uma.jmetal.runner.multiobjective.ParallelSMPSORunner problemName [referenceFront]
-   */
-  public static void main(String[] args) throws Exception {
-    DoubleProblem problem;
-    Algorithm<List<DoubleSolution>> algorithm;
-    MutationOperator<DoubleSolution> mutation;
-    SolutionListEvaluator<DoubleSolution> evaluator ;
+    /**
+     * @param args Command line arguments. The first (optional) argument specifies
+     *             the problem to solve.
+     * @throws util.JMetalException
+     * @throws java.io.IOException
+     * @throws SecurityException    Invoking command:
+     *                              java ParallelSMPSORunner problemName [referenceFront]
+     */
+    public static void main(String[] args) throws Exception {
+        DoubleProblem problem;
+        Algorithm<List<DoubleSolution>> algorithm;
+        MutationOperator<DoubleSolution> mutation;
+        SolutionListEvaluator<DoubleSolution> evaluator;
 
-    String referenceParetoFront = "" ;
+        String referenceParetoFront = "";
 
-    String problemName ;
-    if (args.length == 1) {
-      problemName = args[0];
-    } else if (args.length == 2) {
-      problemName = args[0] ;
-      referenceParetoFront = args[1] ;
-    } else {
-      problemName = "org.uma.jmetal.problem.multiobjective.zdt.ZDT1";
-      referenceParetoFront = "jmetal-problem/src/test/resources/pareto_fronts/ZDT1.pf" ;
+        String problemName;
+        if (args.length == 1) {
+            problemName = args[0];
+        } else if (args.length == 2) {
+            problemName = args[0];
+            referenceParetoFront = args[1];
+        } else {
+            problemName = "ZDT1";
+            referenceParetoFront = "jmetal-problem/src/test/resources/pareto_fronts/ZDT1.pf";
+        }
+
+        problem = (DoubleProblem) ProblemUtils.<DoubleSolution>loadProblem(problemName);
+
+        Archive<DoubleSolution> archive = new CrowdingDistanceArchive<DoubleSolution>(100);
+
+        double mutationProbability = 1.0 / problem.getNumberOfVariables();
+        double mutationDistributionIndex = 20.0;
+        mutation = new PolynomialMutation(mutationProbability, mutationDistributionIndex);
+
+        evaluator = new MultithreadedSolutionListEvaluator<DoubleSolution>(0, problem);
+
+        algorithm = new SMPSOBuilder(problem, archive)
+                .setMutation(mutation)
+                .setMaxIterations(250)
+                .setSwarmSize(100)
+                .setSolutionListEvaluator(evaluator)
+                .build();
+
+        AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
+                .execute();
+
+        List<DoubleSolution> population = ((SMPSO) algorithm).getResult();
+        long computingTime = algorithmRunner.getComputingTime();
+
+        evaluator.shutdown();
+
+        JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
+
+        printFinalSolutionSet(population);
+        if (!referenceParetoFront.equals("")) {
+            printQualityIndicators(population, referenceParetoFront);
+        }
     }
-
-    problem = (DoubleProblem) ProblemUtils.<DoubleSolution> loadProblem(problemName);
-
-    Archive<DoubleSolution> archive = new CrowdingDistanceArchive<DoubleSolution>(100) ;
-
-    double mutationProbability = 1.0 / problem.getNumberOfVariables() ;
-    double mutationDistributionIndex = 20.0 ;
-    mutation = new PolynomialMutation(mutationProbability, mutationDistributionIndex) ;
-
-    evaluator = new MultithreadedSolutionListEvaluator<DoubleSolution>(0, problem) ;
-
-    algorithm = new SMPSOBuilder(problem, archive)
-            .setMutation(mutation)
-            .setMaxIterations(250)
-            .setSwarmSize(100)
-            .setSolutionListEvaluator(evaluator)
-            .build();
-
-    AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
-            .execute();
-
-    List<DoubleSolution> population = ((SMPSO)algorithm).getResult();
-    long computingTime = algorithmRunner.getComputingTime();
-
-    evaluator.shutdown();
-
-    JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
-
-    printFinalSolutionSet(population);
-    if (!referenceParetoFront.equals("")) {
-      printQualityIndicators(population, referenceParetoFront) ;
-    }
-  }
 }

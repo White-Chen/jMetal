@@ -14,12 +14,8 @@
 package org.uma.jmetal.runner.singleobjective;
 
 import org.uma.jmetal.algorithm.Algorithm;
-import org.uma.jmetal.algorithm.singleobjective.differentialevolution.DifferentialEvolutionBuilder;
 import org.uma.jmetal.algorithm.singleobjective.particleswarmoptimization.StandardPSO2007;
-import org.uma.jmetal.operator.impl.crossover.DifferentialEvolutionCrossover;
-import org.uma.jmetal.operator.impl.selection.DifferentialEvolutionSelection;
 import org.uma.jmetal.problem.DoubleProblem;
-import org.uma.jmetal.problem.singleobjective.CEC2005Problem;
 import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.util.AlgorithmRunner;
 import org.uma.jmetal.util.JMetalLogger;
@@ -40,56 +36,56 @@ import java.util.List;
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public class StandardPSO2007Runner {
-  private static final int DEFAULT_NUMBER_OF_CORES = 1 ;
+    private static final int DEFAULT_NUMBER_OF_CORES = 1;
 
-  /**
-   *  Usage: java org.uma.jmetal.runner.singleobjective.StandardPSO2007Runner [cores]
-   */
-  public static void main(String[] args) throws Exception {
+    /**
+     * Usage: java org.uma.jmetal.runner.singleobjective.StandardPSO2007Runner [cores]
+     */
+    public static void main(String[] args) throws Exception {
 
-    DoubleProblem problem;
-    Algorithm<DoubleSolution> algorithm;
-    SolutionListEvaluator<DoubleSolution> evaluator ;
+        DoubleProblem problem;
+        Algorithm<DoubleSolution> algorithm;
+        SolutionListEvaluator<DoubleSolution> evaluator;
 
-    String problemName = "org.uma.jmetal.problem.singleobjective.Sphere" ;
+        String problemName = "org.uma.jmetal.problem.singleobjective.Sphere";
 
-    problem = (DoubleProblem) ProblemUtils.<DoubleSolution> loadProblem(problemName);
+        problem = (DoubleProblem) ProblemUtils.<DoubleSolution>loadProblem(problemName);
 
-    int numberOfCores ;
-    if (args.length == 1) {
-      numberOfCores = Integer.valueOf(args[0]) ;
-    } else {
-      numberOfCores = DEFAULT_NUMBER_OF_CORES ;
+        int numberOfCores;
+        if (args.length == 1) {
+            numberOfCores = Integer.valueOf(args[0]);
+        } else {
+            numberOfCores = DEFAULT_NUMBER_OF_CORES;
+        }
+
+        if (numberOfCores == 1) {
+            evaluator = new SequentialSolutionListEvaluator<DoubleSolution>();
+        } else {
+            evaluator = new MultithreadedSolutionListEvaluator<DoubleSolution>(numberOfCores, problem);
+        }
+
+        algorithm = new StandardPSO2007(problem,
+                10 + (int) (2 * Math.sqrt(problem.getNumberOfVariables())),
+                80000, 3, evaluator,80000);
+
+        AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
+                .execute();
+
+        DoubleSolution solution = algorithm.getResult();
+        long computingTime = algorithmRunner.getComputingTime();
+
+        List<DoubleSolution> population = new ArrayList<>(1);
+        population.add(solution);
+        new SolutionSetOutput.Printer(population)
+                .setSeparator("\t")
+                .setVarFileOutputContext(new DefaultFileOutputContext("VAR.tsv"))
+                .setFunFileOutputContext(new DefaultFileOutputContext("FUN.tsv"))
+                .print();
+
+        JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
+        JMetalLogger.logger.info("Objectives values have been written to file FUN.tsv");
+        JMetalLogger.logger.info("Variables values have been written to file VAR.tsv");
+
+        evaluator.shutdown();
     }
-
-    if (numberOfCores == 1) {
-      evaluator = new SequentialSolutionListEvaluator<DoubleSolution>() ;
-    } else {
-      evaluator = new MultithreadedSolutionListEvaluator<DoubleSolution>(numberOfCores, problem) ;
-    }
-
-    algorithm = new StandardPSO2007(problem,
-            10 + (int) (2 * Math.sqrt(problem.getNumberOfVariables())),
-            80000, 3, evaluator) ;
-
-    AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
-        .execute() ;
-
-    DoubleSolution solution = algorithm.getResult() ;
-    long computingTime = algorithmRunner.getComputingTime() ;
-
-    List<DoubleSolution> population = new ArrayList<>(1) ;
-    population.add(solution) ;
-    new SolutionSetOutput.Printer(population)
-        .setSeparator("\t")
-        .setVarFileOutputContext(new DefaultFileOutputContext("VAR.tsv"))
-        .setFunFileOutputContext(new DefaultFileOutputContext("FUN.tsv"))
-        .print();
-
-    JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
-    JMetalLogger.logger.info("Objectives values have been written to file FUN.tsv");
-    JMetalLogger.logger.info("Variables values have been written to file VAR.tsv");
-
-    evaluator.shutdown();
-  }
 }

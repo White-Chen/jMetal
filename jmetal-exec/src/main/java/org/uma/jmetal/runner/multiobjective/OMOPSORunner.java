@@ -20,6 +20,7 @@
 
 package org.uma.jmetal.runner.multiobjective;
 
+import org.apache.commons.collections.map.ListOrderedMap;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.multiobjective.omopso.OMOPSOBuilder;
 import org.uma.jmetal.operator.MutationOperator;
@@ -30,10 +31,12 @@ import org.uma.jmetal.runner.AbstractAlgorithmRunner;
 import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.util.AlgorithmRunner;
 import org.uma.jmetal.util.JMetalLogger;
+import org.uma.jmetal.util.ProblemListUtils;
 import org.uma.jmetal.util.ProblemUtils;
 import org.uma.jmetal.util.archive.Archive;
 import org.uma.jmetal.util.archive.impl.CrowdingDistanceArchive;
 import org.uma.jmetal.util.evaluator.impl.SequentialSolutionListEvaluator;
+import org.uma.jmetal.util.fileoutput.FileRename;
 
 import java.util.List;
 
@@ -44,56 +47,82 @@ import java.util.List;
  */
 
 public class OMOPSORunner extends AbstractAlgorithmRunner {
-  /**
-   * @param args Command line arguments.
-   * @throws org.uma.jmetal.util.JMetalException
-   * @throws java.io.IOException
-   * @throws SecurityException
-   * Invoking command:
-  java org.uma.jmetal.runner.multiobjective.OMOPSORunner problemName [referenceFront]
-   */
-  public static void main(String[] args) throws Exception {
-    DoubleProblem problem;
-    Algorithm<List<DoubleSolution>> algorithm;
-    MutationOperator<DoubleSolution> mutation;
-
-    String referenceParetoFront = "" ;
-
-    String problemName ;
-    if (args.length == 1) {
-      problemName = args[0];
-    } else if (args.length == 2) {
-      problemName = args[0] ;
-      referenceParetoFront = args[1] ;
-    } else {
-      problemName = "org.uma.jmetal.problem.multiobjective.zdt.ZDT1";
-      referenceParetoFront = "jmetal-problem/src/test/resources/pareto_fronts/ZDT1.pf" ;
+    /**
+     * @throws util.JMetalException
+     * @throws java.io.IOException
+     * @throws SecurityException    Invoking command:
+     *                              java OMOPSORunner problemName [referenceFront]
+     */
+    public static void main(String[] agrs) {
+        singleRun("", "");
     }
 
-    problem = (DoubleProblem) ProblemUtils.<DoubleSolution> loadProblem(problemName);
+    public static void experiment() {
+        ListOrderedMap problemMap = ProblemListUtils.getProblemsMap();
 
-    Archive<DoubleSolution> archive = new CrowdingDistanceArchive<DoubleSolution>(100) ;
+        for (int i = 0; i < problemMap.size(); i++) {
+            for (int j = 0; j < 1; j++) {
+                singleRun((String) problemMap.get(i), (String) problemMap.getValue(i));
+            }
+        }
 
-    double mutationProbability = 1.0 / problem.getNumberOfVariables() ;
-
-    algorithm = new OMOPSOBuilder(problem, new SequentialSolutionListEvaluator<DoubleSolution>())
-        .setMaxIterations(250)
-        .setSwarmSize(100)
-        .setUniformMutation(new UniformMutation(mutationProbability, 0.5))
-        .setNonUniformMutation(new NonUniformMutation(mutationProbability, 0.5, 250))
-        .build();
-
-    AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
-        .execute();
-
-    List<DoubleSolution> population = algorithm.getResult();
-    long computingTime = algorithmRunner.getComputingTime();
-
-    JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
-
-    printFinalSolutionSet(population);
-    if (!referenceParetoFront.equals("")) {
-      printQualityIndicators(population, referenceParetoFront) ;
+        FileRename.renameFile("G:\\学习资料\\百度云\\ItelliWorkSpace\\J4MOP",
+                "indicators.tsv",
+                "OMOPSO_metrics.tsv");
+        FileRename.renameFile("G:\\学习资料\\百度云\\ItelliWorkSpace\\J4MOP",
+                "FUN.tsv",
+                "OMOPSO_FUN.tsv");
+        FileRename.renameFile("G:\\学习资料\\百度云\\ItelliWorkSpace\\J4MOP",
+                "VAR.tsv",
+                "OMOPSO_VAR.tsv");
     }
-  }
+
+    public static void singleRun(String pro, String referencePareto) {
+        DoubleProblem problem;
+        Algorithm<List<DoubleSolution>> algorithm;
+        MutationOperator<DoubleSolution> mutation;
+
+        String problemName;
+        String referenceParetoFront;
+        if (!pro.isEmpty() && !referencePareto.isEmpty() && pro.trim() != null && referencePareto.trim() != null) {
+            problemName = pro;
+            referenceParetoFront = referencePareto;
+        } else {
+            problemName = "problem.multiobjective.cec2009Competition.UF6";
+            referenceParetoFront = "problem/src/test/resources/pareto_fronts/UF6.pf";
+        }
+
+        problem = (DoubleProblem) ProblemUtils.<DoubleSolution>loadProblem(problemName);
+
+        int iterations;
+        if (problem.getNumberOfObjectives() == 2) {
+            iterations = 300;
+        } else {
+            iterations = 500;
+        }
+
+        Archive<DoubleSolution> archive = new CrowdingDistanceArchive<DoubleSolution>(100);
+
+        double mutationProbability = 1.0 / problem.getNumberOfVariables();
+
+        algorithm = new OMOPSOBuilder(problem, new SequentialSolutionListEvaluator<DoubleSolution>())
+                .setMaxIterations(iterations)
+                .setSwarmSize(100)
+                .setUniformMutation(new UniformMutation(mutationProbability, 0.5))
+                .setNonUniformMutation(new NonUniformMutation(mutationProbability, 0.5, iterations))
+                .build();
+
+        AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
+                .execute();
+
+        List<DoubleSolution> population = algorithm.getResult();
+        long computingTime = algorithmRunner.getComputingTime();
+
+        JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
+
+        printFinalSolutionSet(population);
+        if (!referenceParetoFront.equals("")) {
+            printQualityIndicators(population, referenceParetoFront);
+        }
+    }
 }

@@ -19,42 +19,41 @@ import java.util.List;
 /**
  * Created by ajnebro on 22/3/15.
  */
-public class NSGAIIStudy  {
-  public NSGAIIStudy() {
-    List<Problem<DoubleSolution>> problemList = Arrays.<Problem<DoubleSolution>>asList(new ZDT1(), new ZDT2(),
-        new ZDT3(), new ZDT4(), new ZDT6()) ;
+public class NSGAIIStudy {
+    public NSGAIIStudy() {
+        List<Problem<DoubleSolution>> problemList = Arrays.<Problem<DoubleSolution>>asList(new ZDT1(), new ZDT2(),
+                new ZDT3(), new ZDT4(), new ZDT6());
 
-    List<Algorithm<List<DoubleSolution>>> algorithmList = configureAlgorithmList(problemList) ;
+        List<Algorithm<List<DoubleSolution>>> algorithmList = configureAlgorithmList(problemList);
 
-    ExperimentConfiguration<DoubleSolution> configuration = new ExperimentConfigurationBuilder<DoubleSolution>("Experiment")
-        .setAlgorithmList(algorithmList)
-        .setProblemList(problemList)
-        .setExperimentBaseDirectory("/Users/antelverde/Softw/jMetal/jMetalGitHub/pruebas")
-        .setOutputParetoFrontFileName("FUN")
-        .setOutputParetoSetFileName("VAR")
-        .setIndependentRuns(4)
-        .build();
+        ExperimentConfiguration<DoubleSolution> configuration = new ExperimentConfigurationBuilder<DoubleSolution>("Experiment")
+                .setAlgorithmList(algorithmList)
+                .setProblemList(problemList)
+                .setExperimentBaseDirectory("/Users/antelverde/Softw/jMetal/jMetalGitHub/pruebas")
+                .setOutputParetoFrontFileName("FUN")
+                .setOutputParetoSetFileName("VAR")
+                .setIndependentRuns(4)
+                .build();
 
-    AlgorithmExecution algorithmExecution = new AlgorithmExecution(configuration) ;
+        AlgorithmExecution algorithmExecution = new AlgorithmExecution(configuration);
 
-    ExperimentalStudy study = new ExperimentalStudy.Builder(configuration)
-        .addExperiment(algorithmExecution)
-        .build() ;
+        ExperimentalStudy study = new ExperimentalStudy.Builder(configuration)
+                .addExperiment(algorithmExecution)
+                .build();
 
-    study.run() ;
-  }
-
-
-
-  List<Algorithm<List<DoubleSolution>>> configureAlgorithmList(List<Problem<DoubleSolution>> problemList) {
-    List<Algorithm<List<DoubleSolution>>> algorithms = new ArrayList<>() ;
-    for (int i = 0 ; i < problemList.size(); i++) {
-      algorithms.add(
-          new NSGAIIBuilder<>(problemList.get(i), new SBXCrossover(1.0, 20.0),
-              new PolynomialMutation(1.0/problemList.get(i).getNumberOfVariables(), 20.0))
-              .build()) ;
+        study.run();
     }
 
-    return algorithms ;
-  }
+
+    List<Algorithm<List<DoubleSolution>>> configureAlgorithmList(List<Problem<DoubleSolution>> problemList) {
+        List<Algorithm<List<DoubleSolution>>> algorithms = new ArrayList<>();
+        for (int i = 0; i < problemList.size(); i++) {
+            algorithms.add(
+                    new NSGAIIBuilder<>(problemList.get(i), new SBXCrossover(1.0, 20.0),
+                            new PolynomialMutation(1.0 / problemList.get(i).getNumberOfVariables(), 20.0))
+                            .build());
+        }
+
+        return algorithms;
+    }
 }
